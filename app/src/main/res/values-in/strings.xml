@@ -65,8 +65,9 @@
 	<string name="remove_restriction">Hapus pembatasan</string>
 	<string name="find_code">Trouver le code</string>
 	<string name="find_code_with_content">Quel contenu?</string>
-	<string name="find_code_hint">Ingresa un término</string>
-	<string name="scan_format">Pindai %s</string>
+	<string name="find_code_hint">Istilah atau ekspresi reguler</string>
+	<string name="does_not_match_search_term">Tidak cocok dengan istilah pencarian</string>
+	<string name="scan_for">Pindai %s</string>
 	<string name="quarter_second">Seperempat detik</string>
 	<string name="half_second">Setengah detik</string>
 	<string name="a_second">Satu detik</string>
@@ -77,6 +78,13 @@
 	<string name="scan_category">Pemindaian</string>
 	<string name="content_category">Konten</string>
 	<string name="locale_category">Bahasa</string>
+	<string name="profile_category">Profil</string>
+	<string name="profile">Profil</string>
+	<string name="profile_default">Bawaan</string>
+	<string name="profile_add">Tambah profil baru</string>
+	<string name="profile_enter_name">Masukkan nama profil</string>
+	<string name="profile_enter_name_hint">Nama</string>
+	<string name="current_profile">Profil: %s</string>
 	<string name="custom_locale">Bahasa lainnya</string>
 	<string name="follow_system_settings">Ikuti pengaturan sistem</string>
 	<string name="show_crop_handle">Tampilkan pembatas pemotongan</string>

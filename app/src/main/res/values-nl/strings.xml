@@ -66,8 +66,9 @@
 	<string name="remove_restriction">Verwijder beperking</string>
 	<string name="find_code">Vind code</string>
 	<string name="find_code_with_content">Wat voor inhoud?</string>
-	<string name="find_code_hint">Voer een zoekterm in</string>
-	<string name="scan_format">Scan %s</string>
+	<string name="find_code_hint">Zoekterm of reguliere expressie</string>
+	<string name="does_not_match_search_term">Komt niet overeen met zoekterm</string>
+	<string name="scan_for">Scan %s</string>
 	<string name="quarter_second">¼ seconde</string>
 	<string name="half_second">½ seconde</string>
 	<string name="a_second">1 seconde</string>
@@ -78,6 +79,13 @@
 	<string name="scan_category">Scannen</string>
 	<string name="content_category">Inhoud</string>
 	<string name="locale_category">Taal</string>
+	<string name="profile_category">Profiel</string>
+	<string name="profile">Profiel</string>
+	<string name="profile_default">Standaard</string>
+	<string name="profile_add">Nieuw profiel toevoegen</string>
+	<string name="profile_enter_name">Voer profielnaam in</string>
+	<string name="profile_enter_name_hint">Naam</string>
+	<string name="current_profile">Profiel: %s</string>
 	<string name="custom_locale">Taal instelling</string>
 	<string name="follow_system_settings">Systeeminstellingen volgen</string>
 	<string name="show_crop_handle">Bijsnijd-begrenzer tonen</string>

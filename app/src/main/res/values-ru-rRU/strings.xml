@@ -69,8 +69,9 @@
 	<string name="remove_restriction">Включить формат</string>
 	<string name="find_code">Поиск кода</string>
 	<string name="find_code_with_content">Что искать?</string>
-	<string name="find_code_hint">Введите поисковый запрос</string>
-	<string name="scan_format">Сканировать %s</string>
+	<string name="find_code_hint">Термин или регулярное выражение</string>
+	<string name="does_not_match_search_term">Не соответствует поисковому запросу</string>
+	<string name="scan_for">Сканировать %s</string>
 	<string name="quarter_second">Четверть секунды</string>
 	<string name="half_second">Полсекунды</string>
 	<string name="a_second">Одну секунду</string>
@@ -81,6 +82,13 @@
 	<string name="scan_category">Сканирование</string>
 	<string name="content_category">Содержимое</string>
 	<string name="locale_category">Язык</string>
+	<string name="profile_category">Профиль</string>
+	<string name="profile">Профиль</string>
+	<string name="profile_default">По умолчанию</string>
+	<string name="profile_add">Добавить новый профиль</string>
+	<string name="profile_enter_name">Введите имя профиля</string>
+	<string name="profile_enter_name_hint">Имя</string>
+	<string name="current_profile">Профиль: %s</string>
 	<string name="custom_locale">Выбрать язык</string>
 	<string name="follow_system_settings">Как в системе</string>
 	<string name="show_crop_handle">Показывать область сканирования</string>

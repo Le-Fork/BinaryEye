@@ -67,8 +67,9 @@
 	<string name="remove_restriction">Скасувати обмеження</string>
 	<string name="find_code">Знайти код</string>
 	<string name="find_code_with_content">Що саме вміст?</string>
-	<string name="find_code_hint">Введіть термін</string>
-	<string name="scan_format">Сканувати %s</string>
+	<string name="find_code_hint">Термін або регулярний вираз</string>
+	<string name="does_not_match_search_term">Не відповідає пошуковому терміну</string>
+	<string name="scan_for">Сканувати %s</string>
 	<string name="quarter_second">Чверть секунди</string>
 	<string name="half_second">Півсекунди</string>
 	<string name="a_second">Одна секунда</string>
@@ -79,6 +80,13 @@
 	<string name="scan_category">Сканування</string>
 	<string name="content_category">Вміст</string>
 	<string name="locale_category">Мова</string>
+	<string name="profile_category">Профіль</string>
+	<string name="profile">Профіль</string>
+	<string name="profile_default">Типовий</string>
+	<string name="profile_add">Додати новий профіль</string>
+	<string name="profile_enter_name">Введіть назву профілю</string>
+	<string name="profile_enter_name_hint">Назва</string>
+	<string name="current_profile">Профіль: %s</string>
 	<string name="custom_locale">Вибрати мову</string>
 	<string name="follow_system_settings">Дотримуватись системних налаштувань</string>
 	<string name="show_crop_handle">Обмежити область сканування</string>

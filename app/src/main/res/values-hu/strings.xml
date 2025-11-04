@@ -66,8 +66,9 @@
 	<string name="remove_restriction">Korlátozás eltávolítása</string>
 	<string name="find_code">Kód keresése</string>
 	<string name="find_code_with_content">Mi a tartalom?</string>
-	<string name="find_code_hint">Írjon be egy kifejezést</string>
-	<string name="scan_format">%s beolvasása</string>
+	<string name="find_code_hint">Kifejezés vagy reguláris kifejezés</string>
+	<string name="does_not_match_search_term">Nem egyezik a keresőkifejezéssel</string>
+	<string name="scan_for">%s beolvasása</string>
 	<string name="quarter_second">Negyed másodperc</string>
 	<string name="half_second">Fél másodperc</string>
 	<string name="a_second">Egy másodperc</string>
@@ -78,6 +79,13 @@
 	<string name="scan_category">Beolvasás</string>
 	<string name="content_category">Tartalom</string>
 	<string name="locale_category">Nyelv</string>
+	<string name="profile_category">Profil</string>
+	<string name="profile">Profil</string>
+	<string name="profile_default">Alapértelmezett</string>
+	<string name="profile_add">Új profil hozzáadása</string>
+	<string name="profile_enter_name">Adja meg a profil nevét</string>
+	<string name="profile_enter_name_hint">Név</string>
+	<string name="current_profile">Profil: %s</string>
 	<string name="custom_locale">Egyéni nyelv</string>
 	<string name="follow_system_settings">Rendszerbeállítások követése</string>
 	<string name="show_crop_handle">Levágási korlátozó megjelenítése</string>

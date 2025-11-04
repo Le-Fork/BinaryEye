@@ -66,8 +66,9 @@
 	<string name="remove_restriction">Supprimer la restriction</string>
 	<string name="find_code">Trouver un code</string>
 	<string name="find_code_with_content">Quel contenu ?</string>
-	<string name="find_code_hint">Entrer un terme</string>
-	<string name="scan_format">Numériser %s</string>
+	<string name="find_code_hint">Terme ou expression régulière</string>
+	<string name="does_not_match_search_term">Ne correspond pas au terme de recherche</string>
+	<string name="scan_for">Numériser %s</string>
 	<string name="quarter_second">Un quart de seconde</string>
 	<string name="half_second">Une demi-seconde</string>
 	<string name="a_second">Une seconde</string>
@@ -78,6 +79,13 @@
 	<string name="scan_category">Numériser</string>
 	<string name="content_category">Contenu</string>
 	<string name="locale_category">Langue</string>
+	<string name="profile_category">Profil</string>
+	<string name="profile">Profil</string>
+	<string name="profile_default">Par défaut</string>
+	<string name="profile_add">Ajouter un nouveau profil</string>
+	<string name="profile_enter_name">Entrez le nom du profil</string>
+	<string name="profile_enter_name_hint">Nom</string>
+	<string name="current_profile">Profil : %s</string>
 	<string name="custom_locale">Langue personnalisée</string>
 	<string name="follow_system_settings">Suivre les réglages du système</string>
 	<string name="show_crop_handle">Afficher le contrôle du cadrage</string>

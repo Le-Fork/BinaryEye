@@ -66,8 +66,9 @@
 	<string name="remove_restriction">برداشتن محدودیت</string>
 	<string name="find_code">کد را پیدا کنید</string>
 	<string name="find_code_with_content">چه محتوا؟</string>
-	<string name="find_code_hint">یک عبارت وارد کنید</string>
-	<string name="scan_format">پویش %s</string>
+	<string name="find_code_hint">عبارت یا عبارت منظم</string>
+	<string name="does_not_match_search_term">با عبارت جستجو مطابقت ندارد</string>
+	<string name="scan_for">پویش %s</string>
 	<string name="quarter_second">یک‌چهارم ثانیه</string>
 	<string name="half_second">نیم ثانیه</string>
 	<string name="a_second">یک ثانیه</string>
@@ -78,6 +79,13 @@
 	<string name="scan_category">پویش</string>
 	<string name="content_category">محتویات</string>
 	<string name="locale_category">زبان</string>
+	<string name="profile_category">نمایه</string>
+	<string name="profile">نمایه</string>
+	<string name="profile_default">پیش‌فرض</string>
+	<string name="profile_add">افزودن نمایهٔ جدید</string>
+	<string name="profile_enter_name">نام نمایه را وارد کنید</string>
+	<string name="profile_enter_name_hint">نام</string>
+	<string name="current_profile">نمایه: %s</string>
 	<string name="custom_locale">زبان سفارشی</string>
 	<string name="follow_system_settings">پیروی از زبان سامانه</string>
 	<string name="show_crop_handle">نمایش محدود کننده برش</string>

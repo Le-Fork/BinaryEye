@@ -3,16 +3,25 @@ package de.markusfisch.android.binaryeye.preference
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Point
 import android.media.ToneGenerator
 import android.os.Build
 import android.preference.PreferenceManager
 import android.support.annotation.RequiresApi
-import de.markusfisch.android.binaryeye.activity.CameraActivity
 import de.markusfisch.android.zxingcpp.ZxingCpp.BarcodeFormat
+import org.json.JSONArray
 
 class Preferences {
+	lateinit var defaultPreferences: SharedPreferences
 	lateinit var preferences: SharedPreferences
 
+	val profiles = ArrayList<String>()
+
+	var profile: String? = null
+		set(value) {
+			defaultPreferences.edit().putString(PROFILE, value).apply()
+			field = value
+		}
 	var barcodeFormats = setOf(
 		BarcodeFormat.AZTEC.name,
 		BarcodeFormat.CODABAR.name,
@@ -213,8 +222,52 @@ class Preferences {
 		}
 
 	fun init(context: Context) {
-		preferences = PreferenceManager.getDefaultSharedPreferences(context)
+		// I'm not including a support library just to get the
+		// default preferences. Dependencies are a burden.
+		@Suppress("DEPRECATION")
+		defaultPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+
+		loadProfiles()
+		load(context, defaultPreferences.getString(PROFILE, null))
+	}
+
+	fun load(context: Context, profileName: String?) {
+		preferences = if (profileName.isNullOrEmpty()) {
+			profile = null
+			defaultPreferences
+		} else {
+			profile = profileName
+			context.getSharedPreferences(
+				profileName,
+				Context.MODE_PRIVATE
+			)
+		}
 		update()
+	}
+
+	fun addProfile(name: String): Boolean {
+		if (profiles.contains(name)) {
+			return false
+		}
+		profiles.add(name)
+		saveProfiles()
+		return true
+	}
+
+	fun saveProfiles() {
+		defaultPreferences.edit().putString(
+			PROFILES,
+			JSONArray(profiles).toString()
+		).apply()
+	}
+
+	fun loadProfiles() {
+		profiles.clear()
+		JSONArray(
+			defaultPreferences.getString(PROFILES, "[]")
+		).let {
+			profiles.addAll(Array(it.length()) { i -> it.getString(i) })
+		}
 	}
 
 	fun update() {
@@ -227,8 +280,6 @@ class Preferences {
 				)
 			}
 		}
-
-		migrateCropHandle()
 
 		showCropHandle = preferences.getBoolean(
 			SHOW_CROP_HANDLE,
@@ -350,30 +401,18 @@ class Preferences {
 		}
 	}
 
-	private fun migrateCropHandle() {
-		val cropHandleXName = "crop_handle_x"
-		val def = CropHandle()
-		if (preferences.getInt(cropHandleXName, def.x) == def.x) {
-			return;
-		}
-		storeCropHandle(
-			CameraActivity.CAMERA_CROP_HANDLE,
-			CropHandle(
-				preferences.getInt(cropHandleXName, def.x),
-				preferences.getInt("crop_handle_y", def.y),
-				preferences.getInt("crop_handle_orientation", def.orientation)
-			)
-		)
-		preferences.edit().putInt(cropHandleXName, def.x).apply()
-	}
-
 	fun restoreCropHandle(
-		name: String
-	) = preferences.restoreCropHandle(name)
+		name: String,
+		viewWidth: Int,
+		viewHeight: Int
+	) = preferences.restoreCropHandle(name, viewWidth, viewHeight)
 
-	fun storeCropHandle(name: String, cropHandle: CropHandle) {
-		preferences.storeCropHandle(name, cropHandle)
-	}
+	fun storeCropHandle(
+		name: String,
+		viewWidth: Int,
+		viewHeight: Int,
+		cropHandle: Point
+	) = preferences.storeCropHandle(name, viewWidth, viewHeight, cropHandle)
 
 	fun beepTone() = when (beepToneName) {
 		"tone_cdma_confirm" -> ToneGenerator.TONE_CDMA_CONFIRM
@@ -424,6 +463,8 @@ class Preferences {
 			Consecutive, Any, Never
 		}
 
+		private const val PROFILES = "profiles"
+		private const val PROFILE = "profile"
 		private const val BARCODE_FORMATS = "formats"
 		private const val SHOW_CROP_HANDLE = "show_crop_handle"
 		private const val ZOOM_BY_SWIPING = "zoom_by_swiping"

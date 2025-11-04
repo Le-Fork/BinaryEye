@@ -9,8 +9,8 @@ android {
 		minSdk 9
 		targetSdk sdk_version
 
-		versionCode 149
-		versionName '1.66.1'
+		versionCode 151
+		versionName '1.67.0'
 	}
 
 	signingConfigs {
@@ -71,7 +71,7 @@ android {
 dependencies {
 	// Kotlin
 	implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-	implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0"
+	implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2"
 
 	// Support
 	implementation "com.android.support:appcompat-v7:$support_version"
@@ -82,9 +82,9 @@ dependencies {
 	// External
 	implementation 'com.github.markusfisch:CameraView:1.10.0'
 	implementation 'com.github.markusfisch:ScalingImageView:1.4.1'
-	implementation 'com.github.markusfisch:zxing-cpp:v2.3.0.3'
+	implementation 'com.github.markusfisch:zxing-cpp:v2.3.0.4'
 
 	// Testing
 	testImplementation 'junit:junit:4.13.2'
-	testImplementation 'org.robolectric:robolectric:4.14'
+	testImplementation 'org.robolectric:robolectric:4.16'
 }

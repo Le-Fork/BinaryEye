@@ -65,8 +65,9 @@
 	<string name="remove_restriction">解除限制</string>
 	<string name="find_code">找码</string>
 	<string name="find_code_with_content">什么内容？</string>
-	<string name="find_code_hint">输入一个术语</string>
-	<string name="scan_format">扫描 %s</string>
+	<string name="find_code_hint">术语或正则表达式</string>
+	<string name="does_not_match_search_term">与搜索词不匹配</string>
+	<string name="scan_for">扫描 %s</string>
 	<string name="quarter_second">四分之一秒</string>
 	<string name="half_second">半秒</string>
 	<string name="a_second">一秒</string>
@@ -77,6 +78,13 @@
 	<string name="scan_category">扫描</string>
 	<string name="content_category">内容</string>
 	<string name="locale_category">语言</string>
+	<string name="profile_category">配置文件</string>
+	<string name="profile">配置文件</string>
+	<string name="profile_default">默认</string>
+	<string name="profile_add">添加新配置文件</string>
+	<string name="profile_enter_name">输入配置文件名称</string>
+	<string name="profile_enter_name_hint">名称</string>
+	<string name="current_profile">配置文件：%s</string>
 	<string name="custom_locale">设定语言</string>
 	<string name="follow_system_settings">跟随系统设置</string>
 	<string name="show_crop_handle">限制扫描范围</string>

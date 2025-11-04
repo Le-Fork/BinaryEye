@@ -71,6 +71,8 @@ class CameraActivity : AppCompatActivity() {
 	private lateinit var zoomBar: SeekBar
 	private lateinit var flashFab: FloatingActionButton
 
+	private var currentProfile = prefs.profile
+	private var shouldStoreSettings = true
 	private var formatsToRead = setOf<BarcodeFormat>()
 	private var frameMetrics = FrameMetrics()
 	private var decoding = true
@@ -80,7 +82,7 @@ class CameraActivity : AppCompatActivity() {
 	private var frontFacing = false
 	private var bulkMode = prefs.bulkMode
 	private var restrictFormat: String? = null
-	private var searchTerm: String? = null
+	private var searchTerm: Regex? = null
 	private var ignoreNext: String? = null
 	private var fallbackBuffer: IntArray? = null
 	private var requestCameraPermission = true
@@ -150,8 +152,6 @@ class CameraActivity : AppCompatActivity() {
 	override fun onDestroy() {
 		super.onDestroy()
 		fallbackBuffer = null
-		saveZoom()
-		detectorView.storeCropHandlePos(CAMERA_CROP_HANDLE)
 		releaseToneGenerators()
 	}
 
@@ -161,13 +161,11 @@ class CameraActivity : AppCompatActivity() {
 			startActivity(Intent(this, WelcomeActivity::class.java))
 			return
 		}
-		System.gc()
-		updateHintsAndTitle()
-		if (prefs.bulkMode && bulkMode != prefs.bulkMode) {
-			bulkMode = prefs.bulkMode
-			invalidateOptionsMenu()
-			ignoreNext = null
+		loadPreferences()
+		if (refreshIfProfileChanged()) {
+			return
 		}
+		System.gc()
 		setReturnTarget(intent)
 		// Avoid asking multiple times when the user has denied access
 		// for this session. Otherwise ActivityCompat.requestPermissions()
@@ -180,14 +178,40 @@ class CameraActivity : AppCompatActivity() {
 
 	private fun Context.firstStart(): Boolean {
 		val welcomeShownName = "welcome_shown"
-		if (prefs.preferences.getBoolean(welcomeShownName, false)) {
+		if (prefs.defaultPreferences.getBoolean(welcomeShownName, false)) {
 			return false
 		}
-		prefs.preferences.edit().putBoolean(welcomeShownName, true).apply()
+		prefs.defaultPreferences.edit().putBoolean(welcomeShownName, true).apply()
 		val packageInfo = packageManager.getPackageInfo(packageName, 0)
 		val installedSince = System.currentTimeMillis() -
 				packageInfo.firstInstallTime
 		return installedSince < 86400000
+	}
+
+	private fun refreshIfProfileChanged(): Boolean {
+		if (currentProfile == prefs.profile) {
+			return false
+		}
+		shouldStoreSettings = false
+		zoomBar.max = 0 // Reset zoom when there are no preferences yet.
+		currentProfile = prefs.profile
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			recreate()
+		} else {
+			finish()
+			startActivity(Intent(this, CameraActivity::class.java))
+		}
+		return true
+	}
+
+	private fun loadPreferences() {
+		detectorView.updateCropHandlePos()
+		updateHintsAndTitle()
+		if (prefs.bulkMode && bulkMode != prefs.bulkMode) {
+			bulkMode = prefs.bulkMode
+			invalidateOptionsMenu()
+			ignoreNext = null
+		}
 	}
 
 	private fun updateHintsAndTitle() {
@@ -203,13 +227,11 @@ class CameraActivity : AppCompatActivity() {
 	private fun updateTitle() {
 		if (searchTerm != null || restrictFormat != null) {
 			title = getString(
-				R.string.scan_format,
-				prettifyFormatName(
-					listOfNotNull(
-						restrictFormat,
-						searchTerm
-					).joinToString(",")
-				)
+				R.string.scan_for,
+				listOfNotNull(
+					searchTerm?.let { "\"$it\"" },
+					restrictFormat?.prettifyFormatName(),
+				).joinToString(" ")
 			)
 		} else {
 			setTitle(R.string.scan_code)
@@ -245,10 +267,19 @@ class CameraActivity : AppCompatActivity() {
 	override fun onPause() {
 		super.onPause()
 		closeCamera()
+		if (shouldStoreSettings) {
+			storeSettings();
+		}
+		shouldStoreSettings = true
 	}
 
 	private fun closeCamera() {
 		cameraView.close()
+	}
+
+	private fun storeSettings() {
+		storeZoomBarSettings()
+		detectorView.storeCropHandlePos()
 	}
 
 	override fun onRestoreInstanceState(savedState: Bundle) {
@@ -258,7 +289,7 @@ class CameraActivity : AppCompatActivity() {
 		frontFacing = savedState.getBoolean(FRONT_FACING)
 		bulkMode = savedState.getBoolean(BULK_MODE)
 		restrictFormat = savedState.getString(RESTRICT_FORMAT)
-		searchTerm = savedState.getString(SEARCH_TERM)
+		searchTerm = savedState.getString(SEARCH_TERM)?.toRegex()
 	}
 
 	override fun onSaveInstanceState(outState: Bundle) {
@@ -267,7 +298,7 @@ class CameraActivity : AppCompatActivity() {
 		outState.putBoolean(FRONT_FACING, frontFacing)
 		outState.putBoolean(BULK_MODE, bulkMode)
 		outState.putString(RESTRICT_FORMAT, restrictFormat)
-		outState.putString(SEARCH_TERM, searchTerm)
+		outState.putString(SEARCH_TERM, searchTerm?.toString())
 		super.onSaveInstanceState(outState)
 	}
 
@@ -283,6 +314,10 @@ class CameraActivity : AppCompatActivity() {
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
 		menuInflater.inflate(R.menu.activity_camera, menu)
 		menu.findItem(R.id.bulk_mode).isChecked = bulkMode
+		menu.findItem(R.id.profile).title = getString(
+			R.string.current_profile,
+			prefs.profile ?: getString(R.string.profile_default)
+		)
 		return true
 	}
 
@@ -343,6 +378,11 @@ class CameraActivity : AppCompatActivity() {
 				true
 			}
 
+			R.id.profile -> {
+				pickProfile()
+				true
+			}
+
 			else -> super.onOptionsItemSelected(item)
 		}
 	}
@@ -383,20 +423,22 @@ class CameraActivity : AppCompatActivity() {
 	private fun askForCode() {
 		val view = layoutInflater.inflate(R.layout.dialog_find_code, null)
 		val editText = view.findViewById<EditText>(R.id.term)
-		searchTerm.let {
-			editText.setText(it)
+		searchTerm?.let {
+			editText.setText(it.toString())
 		}
 		AlertDialog.Builder(this)
 			.setView(view)
 			.setPositiveButton(android.R.string.ok) { _, _ ->
-				searchTerm = editText.text.toString()
-				if (searchTerm?.isEmpty() == true) {
-					searchTerm = null
+				val term = editText.text.toString().trim()
+				if (!term.isEmpty()) {
+					searchTerm = term.toRegex()
+					ignoreNext = null
 				}
 				updateTitle()
 			}
 			.setNegativeButton(android.R.string.cancel) { _, _ ->
 				searchTerm = null
+				ignoreNext = null
 				updateTitle()
 			}
 			.show()
@@ -408,6 +450,27 @@ class CameraActivity : AppCompatActivity() {
 			Uri.parse(getString(R.string.project_url))
 		)
 		execShareIntent(intent)
+	}
+
+	private fun pickProfile() {
+		val profiles = arrayOf(
+			getString(R.string.profile_default),
+		) + prefs.profiles
+		AlertDialog.Builder(this)
+			.setTitle(R.string.profile)
+			.setItems(profiles) { _, which ->
+				val newProfile = when (which) {
+					0 -> null
+					else -> profiles[which]
+				}
+				if (currentProfile != newProfile) {
+					storeSettings()
+					prefs.load(this, newProfile)
+					loadPreferences()
+					refreshIfProfileChanged()
+				}
+			}
+			.show()
 	}
 
 	private fun handleSendText(intent: Intent) {
@@ -497,11 +560,12 @@ class CameraActivity : AppCompatActivity() {
 				parameters: Camera.Parameters
 			) {
 				zoomBar.visibility = if (parameters.isZoomSupported) {
+					restoreZoomBarSettings()
 					val max = parameters.maxZoom
 					if (zoomBar.max != max) {
 						zoomBar.max = max
 						zoomBar.progress = max / 10
-						saveZoom()
+						storeZoomBarSettings()
 					}
 					parameters.zoom = zoomBar.progress
 					View.VISIBLE
@@ -568,13 +632,21 @@ class CameraActivity : AppCompatActivity() {
 						)?.let { results ->
 							val result = results.first()
 							val text = result.text
-							val term = searchTerm
-							if (text != ignoreNext &&
-								(term == null || text.contains(term))
-							) {
-								postResult(result)
-								decoding = false
+							if (text == ignoreNext) {
+								return@let
 							}
+							val term = searchTerm
+							if (term != null &&
+								!text.matches(term) &&
+								!text.contains(term)
+							) {
+								ignoreNext = text
+								errorFeedback()
+								toast(R.string.does_not_match_search_term)
+								return@let
+							}
+							postResult(result)
+							decoding = false
 						}
 					}
 				}
@@ -604,7 +676,6 @@ class CameraActivity : AppCompatActivity() {
 
 			override fun onStopTrackingTouch(seekBar: SeekBar) {}
 		})
-		restoreZoom()
 	}
 
 	@Suppress("DEPRECATION")
@@ -618,14 +689,14 @@ class CameraActivity : AppCompatActivity() {
 		}
 	}
 
-	private fun saveZoom() {
+	private fun storeZoomBarSettings() {
 		val editor = prefs.preferences.edit()
 		editor.putInt(ZOOM_MAX, zoomBar.max)
 		editor.putInt(ZOOM_LEVEL, zoomBar.progress)
 		editor.apply()
 	}
 
-	private fun restoreZoom() {
+	private fun restoreZoomBarSettings() {
 		zoomBar.max = prefs.preferences.getInt(ZOOM_MAX, zoomBar.max)
 		zoomBar.progress = prefs.preferences.getInt(
 			ZOOM_LEVEL,
@@ -642,7 +713,7 @@ class CameraActivity : AppCompatActivity() {
 			updateFrameRoiAndMappingMatrix()
 		}
 		detectorView.setPaddingFromWindowInsets()
-		detectorView.restoreCropHandlePos(CAMERA_CROP_HANDLE)
+		detectorView.cropHandleName = "camera_crop_handle"
 	}
 
 	private fun updateFrameRoiAndMappingMatrix() {
@@ -751,8 +822,6 @@ class CameraActivity : AppCompatActivity() {
 	}
 
 	companion object {
-		const val CAMERA_CROP_HANDLE = "camera_crop_handle"
-
 		private const val PICK_FILE_RESULT_CODE = 1
 		private const val ZOOM_MAX = "zoom_max"
 		private const val ZOOM_LEVEL = "zoom_level"

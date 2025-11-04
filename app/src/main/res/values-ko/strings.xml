@@ -65,8 +65,9 @@
 	<string name="remove_restriction">제한 해제</string>
 	<string name="find_code">코드 찾기</string>
 	<string name="find_code_with_content">무슨 내용?</string>
-	<string name="find_code_hint">용어를 입력하세요</string>
-	<string name="scan_format">스캔 %s</string>
+	<string name="find_code_hint">용어 또는 정규 표현식</string>
+	<string name="does_not_match_search_term">검색어와 일치하지 않음</string>
+	<string name="scan_for">스캔 %s</string>
 	<string name="quarter_second">0.25초</string>
 	<string name="half_second">반초</string>
 	<string name="a_second">일 초</string>
@@ -77,6 +78,13 @@
 	<string name="scan_category">스캔</string>
 	<string name="content_category">콘텐츠</string>
 	<string name="locale_category">언어</string>
+	<string name="profile_category">프로필</string>
+	<string name="profile">프로필</string>
+	<string name="profile_default">기본</string>
+	<string name="profile_add">새 프로필 추가</string>
+	<string name="profile_enter_name">프로필 이름 입력</string>
+	<string name="profile_enter_name_hint">이름</string>
+	<string name="current_profile">프로필: %s</string>
 	<string name="custom_locale">사용자 정의 언어</string>
 	<string name="follow_system_settings">시스템 설정 따르기</string>
 	<string name="show_crop_handle">크롭 제한기 표시</string>
