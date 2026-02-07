@@ -85,6 +85,10 @@
 	<string name="profile_add">Aggiungi nuovo profilo</string>
 	<string name="profile_enter_name">Inserisci nome profilo</string>
 	<string name="profile_enter_name_hint">Nome</string>
+	<string name="profile_invalid_name">Nome profilo non valido</string>
+	<string name="profile_empty">Nessun profilo per ora</string>
+	<string name="profile_current">Profilo attuale</string>
+	<string name="profile_remove_confirm">Rimuovere questo profilo?</string>
 	<string name="current_profile">Profilo: %s</string>
 	<string name="custom_locale">Lingua personalizzata</string>
 	<string name="follow_system_settings">Usa impostazioni di sistema</string>
@@ -133,6 +137,36 @@
 	<string name="default_search_engine">Apri dati sconosciuti con</string>
 	<string name="always_ask">Chiedi sempre</string>
 	<string name="open_with_url">Apri dati sconosciuti con URL</string>
+	<string name="automated_actions">Azioni automatizzate</string>
+	<string name="automated_actions_none">Nessuna azione automatizzata</string>
+	<string name="automated_actions_empty">Nessuna azione automatizzata ancora</string>
+	<plurals name="automated_actions_count">
+		<item quantity="one">%d azione automatizzata</item>
+		<item quantity="other">%d azioni automatizzate</item>
+	</plurals>
+	<string name="automated_action_add">Aggiungi azione</string>
+	<string name="automated_action_edit">Modifica azione</string>
+	<string name="automated_action_regex">Espressione regolare</string>
+	<string name="automated_action_regex_hint">es. ^https?://.*</string>
+	<string name="automated_action_regex_required">Richiesta espressione regolare</string>
+	<string name="automated_action_regex_invalid">Espressione regolare non valida</string>
+	<string name="automated_action_type">Tipo azione</string>
+	<string name="automated_action_type_intent">Apri URL</string>
+	<string name="automated_action_type_custom_intent">Intento personalizzato</string>
+	<string name="automated_action_url_template">Modello URL</string>
+	<string name="automated_action_url_hint">https://example.com/?q={RESULT}</string>
+	<string name="automated_action_url_required">Richiesto modello URL</string>
+	<string name="automated_action_intent_uri_template">Modello URI intento</string>
+	<string name="automated_action_intent_uri_hint">intento:#Intent;action=android.intent.action.SEND;type=text/plain;S.android.intent.extra.TEXT={RESULT};end</string>
+	<string name="automated_action_intent_uri_required">Richiesto URI intento</string>
+	<string name="automated_action_intent_uri_invalid">URI intento non valido</string>
+	<string name="automated_action_invalid_url">Modello URL non valido</string>
+	<string name="automated_action_remove_confirm">Vuoi rimuovere questa azione?</string>
+	<string name="automated_action_list_intent">Apri URL: %s</string>
+	<string name="automated_action_list_intent_empty">Apri URL</string>
+	<string name="automated_action_list_custom_intent">Intento personalizzato: %s</string>
+	<string name="automated_action_list_custom_intent_empty">Intento personalizzato</string>
+	<string name="automated_action_webview_title">Azione automatizzata</string>
 	<string name="clear_network_suggestions">Cancella suggerimenti di rete</string>
 	<string name="clear_network_suggestions_summary">Cancella tutti i suggerimenti di rete precedentemente forniti da questa app.</string>
 	<string name="really_remove_all_networks">Vuoi rimuovere tutte le reti?</string>
@@ -155,7 +189,7 @@
 	<string name="no_bluetooth_hosts_paired">Nessun host accoppiato</string>
 	<string name="bluetooth_connect_fail">Impossibile connettersi al dispositivo Bluetooth.</string>
 	<string name="bluetooth_send_fail">Impossibile inviare al dispositivo Bluetooth.</string>
-	<string name="bluetooth_send_success">Invio via Bluetooth riuscito.</string>
+	<string name="bluetooth_send_success">Invio via Bluetooth completato.</string>
 	<string name="generation_category">Generazione</string>
 	<string name="brighten_screen">Schiarisci schermo</string>
 	<string name="brighten_screen_summary">Imposta luminosità al massimo per migliorare la scansione di un codice a barre dallo schermo.</string>
@@ -228,5 +262,5 @@
 	<string name="email_body">Corpo</string>
 	<string name="scheme">Schema</string>
 	<string name="host">Host</string>
-	<string name="query">Query</string>
+	<string name="query">Richiesta</string>
 </resources>

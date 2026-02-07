@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
 
 android {
 	namespace "de.markusfisch.android.binaryeye"
@@ -35,7 +34,7 @@ android {
 		}
 
 		release {
-			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+			proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 			minifyEnabled true
 			shrinkResources true
 			signingConfig signingConfigs.release
@@ -63,9 +62,6 @@ android {
 		sourceCompatibility = JavaVersion.VERSION_1_8
 		targetCompatibility = JavaVersion.VERSION_1_8
 	}
-	kotlinOptions {
-		jvmTarget = "1.8"
-	}
 }
 
 dependencies {
@@ -86,5 +82,5 @@ dependencies {
 
 	// Testing
 	testImplementation 'junit:junit:4.13.2'
-	testImplementation 'org.robolectric:robolectric:4.16'
+	testImplementation 'org.robolectric:robolectric:4.16.1'
 }

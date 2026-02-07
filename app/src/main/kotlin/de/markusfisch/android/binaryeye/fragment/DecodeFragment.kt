@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.DocumentsContract
-import android.support.annotation.RequiresApi
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
 import android.text.Editable
@@ -53,7 +52,6 @@ import de.markusfisch.android.binaryeye.content.shareAsFile
 import de.markusfisch.android.binaryeye.content.shareText
 import de.markusfisch.android.binaryeye.content.toBarcode
 import de.markusfisch.android.binaryeye.content.toErrorCorrectionInt
-import de.markusfisch.android.binaryeye.content.toHexString
 import de.markusfisch.android.binaryeye.content.wipeLastShareFile
 import de.markusfisch.android.binaryeye.database.Scan
 import de.markusfisch.android.binaryeye.io.askForFileName

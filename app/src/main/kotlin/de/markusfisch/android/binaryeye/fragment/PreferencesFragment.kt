@@ -1,6 +1,5 @@
 package de.markusfisch.android.binaryeye.fragment
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
@@ -16,7 +15,6 @@ import android.support.v7.preference.ListPreference
 import android.support.v7.preference.Preference
 import android.support.v7.preference.PreferenceFragmentCompat
 import android.support.v7.preference.PreferenceGroup
-import android.widget.EditText
 import de.markusfisch.android.binaryeye.R
 import de.markusfisch.android.binaryeye.activity.SplashActivity
 import de.markusfisch.android.binaryeye.app.addFragment
@@ -30,6 +28,8 @@ import de.markusfisch.android.binaryeye.view.systemBarRecyclerViewScrollListener
 import de.markusfisch.android.binaryeye.widget.toast
 
 class PreferencesFragment : PreferenceFragmentCompat() {
+	private var lastProfile: String? = null
+
 	private val changeListener = object : OnSharedPreferenceChangeListener {
 		override fun onSharedPreferenceChanged(
 			sharedPreferences: SharedPreferences?,
@@ -37,7 +37,7 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 		) {
 			key ?: return
 			val preference = findPreference(key) ?: return
-			if (preference.key != "profile") {
+			if (preference.key != PROFILE) {
 				prefs.update()
 			}
 			when (preference.key) {
@@ -80,62 +80,33 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 		setSummaries(preferenceScreen)
 
 		wireProfiles()
+		wireAutomatedActions()
 		setBluetoothResources()
 		wireClearNetworkPreferences()
 	}
 
 	private fun wireProfiles() {
-		findPreference("profile").apply {
-			summary = prefs.profile ?: getString(R.string.profile_default)
+		findPreference(PROFILE).apply {
+			updateProfileSummary(this)
 			onPreferenceClickListener = Preference.OnPreferenceClickListener {
-				pickProfile()
+				activity?.supportFragmentManager?.addFragment(
+					ProfilesFragment()
+				)
 				true
 			}
 		}
 	}
 
-	private fun pickProfile() {
-		val profiles = arrayOf(
-			getString(R.string.profile_add),
-			getString(R.string.profile_default),
-		) + prefs.profiles
-		AlertDialog.Builder(context)
-			.setTitle(R.string.profile)
-			.setItems(profiles) { _, which ->
-				val current = prefs.profile
-				when (which) {
-					0 -> {
-						askForProfileName()
-						return@setItems
-					}
-
-					1 -> prefs.load(activity, null)
-					else -> prefs.load(activity, profiles[which])
-				}
-				if (current != prefs.profile) {
-					loadPreferences()
-				}
+	private fun wireAutomatedActions() {
+		findPreference(AUTOMATED_ACTIONS).apply {
+			updateAutomatedActionsSummary(this)
+			onPreferenceClickListener = Preference.OnPreferenceClickListener {
+				activity?.supportFragmentManager?.addFragment(
+					AutomatedActionsFragment()
+				)
+				true
 			}
-			.show()
-	}
-
-	// Dialogs do not have a parent view.
-	@SuppressLint("InflateParams")
-	private fun askForProfileName() {
-		val view = activity.layoutInflater.inflate(
-			R.layout.dialog_profile_name, null
-		)
-		val editText = view.findViewById<EditText>(R.id.name)
-		AlertDialog.Builder(activity)
-			.setView(view)
-			.setPositiveButton(android.R.string.ok) { _, _ ->
-				val name = editText.text.toString().trim()
-				if (name.isNotEmpty() && prefs.addProfile(name)) {
-					prefs.load(activity, name)
-					loadPreferences()
-				}
-			}
-			.show()
+		}
 	}
 
 	private fun setBluetoothResources() {
@@ -154,7 +125,9 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 				// From R+ we can query past network suggestions and
 				// make them editable.
 				setOnPreferenceClickListener {
-					fragmentManager.addFragment(NetworkSuggestionsFragment())
+					activity?.supportFragmentManager?.addFragment(
+						NetworkSuggestionsFragment()
+					)
 					true
 				}
 			} else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
@@ -199,7 +172,16 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 
 	override fun onResume() {
 		super.onResume()
+		if (lastProfile != prefs.profile) {
+			loadPreferences()
+		}
 		activity?.setTitle(R.string.preferences)
+		findPreference(AUTOMATED_ACTIONS)?.let {
+			updateAutomatedActionsSummary(it)
+		}
+		findPreference(PROFILE)?.let {
+			updateProfileSummary(it)
+		}
 		listView.setPaddingFromWindowInsets()
 		listView.removeOnScrollListener(systemBarRecyclerViewScrollListener)
 		listView.addOnScrollListener(systemBarRecyclerViewScrollListener)
@@ -237,6 +219,10 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 	}
 
 	private fun setSummary(preference: Preference) {
+		if (preference.key == AUTOMATED_ACTIONS) {
+			updateAutomatedActionsSummary(preference)
+			return
+		}
 		when (preference) {
 			is UrlPreference -> {
 				preference.summary = preference.getUrl()
@@ -256,6 +242,29 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 				setSummaries(preference)
 			}
 		}
+	}
+
+	private fun updateAutomatedActionsSummary(preference: Preference) {
+		val count = prefs.automatedActions.size
+		preference.summary = if (count == 0) {
+			getString(R.string.automated_actions_none)
+		} else {
+			resources.getQuantityString(
+				R.plurals.automated_actions_count,
+				count,
+				count
+			)
+		}
+	}
+
+	private fun updateProfileSummary(preference: Preference) {
+		preference.summary = prefs.profile ?: getString(R.string.profile_default)
+		lastProfile = prefs.profile
+	}
+
+	companion object {
+		private const val PROFILE = "profile"
+		private const val AUTOMATED_ACTIONS = "automated_actions"
 	}
 }
 
