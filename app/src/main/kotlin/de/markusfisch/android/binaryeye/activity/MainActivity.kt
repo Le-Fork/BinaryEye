@@ -68,7 +68,12 @@ class MainActivity : AppCompatActivity() {
 		}
 
 		if (state == null) {
-			supportFragmentManager?.setFragment(getFragmentForIntent(intent))
+			val fragment = intent?.getFragmentForIntent()
+			if (fragment == null) {
+				finish()
+				return
+			}
+			supportFragmentManager?.setFragment(fragment)
 		}
 	}
 
@@ -78,32 +83,29 @@ class MainActivity : AppCompatActivity() {
 		private const val ENCODE = "encode"
 		const val DECODED = "decoded"
 
-		private fun getFragmentForIntent(intent: Intent?): Fragment {
-			intent ?: return PreferencesFragment()
-			return when {
-				intent.hasExtra(PREFERENCES) -> PreferencesFragment()
-				intent.hasExtra(HISTORY) -> HistoryFragment()
+		private fun Intent.getFragmentForIntent(): Fragment? = when {
+			hasExtra(PREFERENCES) -> PreferencesFragment()
+			hasExtra(HISTORY) -> HistoryFragment()
 
-				intent.dataString?.let(::isEncodeDeeplink) == true -> {
-					val uri = Uri.parse(intent.dataString)
-					EncodeFragment.newInstance(
-						content = uri.getQueryParameter("content"),
-						format = uri.getQueryParameter("format")?.uppercase(),
-						execute = uri.getQueryParameter("execute")
-							.let { it == "" || it.toBoolean() }
-					)
-				}
-
-				intent.hasExtra(ENCODE) -> EncodeFragment.newInstance(
-					intent.getStringExtra(ENCODE)
+			dataString?.let(::isEncodeDeeplink) == true -> {
+				val uri = Uri.parse(dataString)
+				EncodeFragment.newInstance(
+					content = uri.getQueryParameter("content"),
+					format = uri.getQueryParameter("format")?.uppercase(),
+					execute = uri.getQueryParameter("execute")
+						.let { it == "" || it.toBoolean() }
 				)
-
-				intent.hasExtra(DECODED) -> intent.getScanExtra(DECODED)?.let {
-					DecodeFragment.newInstance(it)
-				} ?: DecodeFragment()
-
-				else -> PreferencesFragment()
 			}
+
+			hasExtra(ENCODE) -> EncodeFragment.newInstance(
+				getStringExtra(ENCODE)
+			)
+
+			hasExtra(DECODED) -> getScanExtra(DECODED)?.let {
+				DecodeFragment.newInstance(it)
+			}
+
+			else -> PreferencesFragment()
 		}
 
 		fun getPreferencesIntent(context: Context): Intent {
@@ -148,15 +150,22 @@ class MainActivity : AppCompatActivity() {
 	}
 }
 
-private fun Intent.getScanExtra(name: String): Scan? = try {
-	if (
-		Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
-	) {
-		@Suppress("DEPRECATION")
-		getParcelableExtra(name)
-	} else {
+@Suppress("DEPRECATION")
+private fun Intent.getScanExtra(name: String): Scan? = if (
+	Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+) {
+	try {
 		getParcelableExtra(name, Scan::class.java)
+	} catch (_: Throwable) {
+		// `getParcelableExtra(name, Class)` can throw on some versions
+		// of Android when the ClassLoader associated with the Bundle's
+		// lazy-decoded value is null in certain scenarios (e.g., after
+		// an activity restart where the system re-delivers the intent).
+		// Simply fallback to the "deprecated" `getParcelableExtra(name)`
+		// which works in this case, because it doesn't verify the
+		// parcelable's class against Scan::class.java.
+		null
 	}
-} catch (_: Throwable) {
+} else {
 	null
-}
+} ?: getParcelableExtra(name)
