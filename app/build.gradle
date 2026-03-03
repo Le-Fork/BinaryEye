@@ -8,8 +8,8 @@ android {
 		minSdk 9
 		targetSdk sdk_version
 
-		versionCode 158
-		versionName '1.68.4'
+		versionCode 159
+		versionName '1.68.5'
 	}
 
 	signingConfigs {
@@ -77,8 +77,8 @@ dependencies {
 
 	// External
 	implementation 'com.github.markusfisch:CameraView:1.10.0'
-	implementation 'com.github.markusfisch:ScalingImageView:1.4.1'
-	implementation 'com.github.markusfisch:zxing-cpp:v3.0.2.0'
+	implementation 'com.github.markusfisch:ScalingImageView:1.4.3'
+	implementation 'com.github.markusfisch:zxing-cpp:v2.3.0.4'
 
 	// Testing
 	testImplementation 'junit:junit:4.13.2'
