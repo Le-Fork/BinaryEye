@@ -12,8 +12,10 @@ import android.hardware.Camera
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
+import androidx.core.net.toUri
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
@@ -93,6 +95,11 @@ class CameraActivity : AppCompatActivity() {
 		permissions: Array<String>,
 		grantResults: IntArray
 	) {
+		super.onRequestPermissionsResult(
+			requestCode,
+			permissions,
+			grantResults
+		)
 		when (requestCode) {
 			PERMISSION_CAMERA -> if (grantResults.isNotEmpty() &&
 				grantResults[0] != PackageManager.PERMISSION_GRANTED
@@ -107,6 +114,7 @@ class CameraActivity : AppCompatActivity() {
 		resultCode: Int,
 		resultData: Intent?
 	) {
+		super.onActivityResult(requestCode, resultCode, resultData)
 		when (requestCode) {
 			PICK_FILE_RESULT_CODE -> {
 				if (resultCode == RESULT_OK && resultData != null) {
@@ -182,7 +190,9 @@ class CameraActivity : AppCompatActivity() {
 		if (prefs.defaultPreferences.getBoolean(welcomeShownName, false)) {
 			return false
 		}
-		prefs.defaultPreferences.edit().putBoolean(welcomeShownName, true).apply()
+		prefs.defaultPreferences.edit {
+			putBoolean(welcomeShownName, true)
+		}
 		val packageInfo = packageManager.getPackageInfo(packageName, 0)
 		val installedSince = System.currentTimeMillis() -
 				packageInfo.firstInstallTime
@@ -325,7 +335,7 @@ class CameraActivity : AppCompatActivity() {
 			}
 
 			R.id.history -> {
-				startActivity(MainActivity.getHistoryIntent(this))
+				startActivity(Intent(this, HistoryActivity::class.java))
 				true
 			}
 
@@ -365,7 +375,7 @@ class CameraActivity : AppCompatActivity() {
 			}
 
 			R.id.preferences -> {
-				startActivity(MainActivity.getPreferencesIntent(this))
+				startActivity(Intent(this, PreferencesActivity::class.java))
 				true
 			}
 
@@ -384,7 +394,7 @@ class CameraActivity : AppCompatActivity() {
 	}
 
 	private fun createBarcode() {
-		startActivity(MainActivity.getEncodeIntent(this))
+		startActivity(EncodeActivity.newIntent<String>(this))
 	}
 
 	private fun switchCamera() {
@@ -443,7 +453,7 @@ class CameraActivity : AppCompatActivity() {
 	private fun openReadme() {
 		val intent = Intent(
 			Intent.ACTION_VIEW,
-			Uri.parse(getString(R.string.project_url))
+			getString(R.string.project_url).toUri()
 		)
 		execShareIntent(intent)
 	}
@@ -473,7 +483,13 @@ class CameraActivity : AppCompatActivity() {
 		val text = intent.getStringExtra(Intent.EXTRA_TEXT)
 
 		if (text?.isEmpty() == false) {
-			startActivity(MainActivity.getEncodeIntent(this, text, true))
+			startActivity(EncodeActivity.newIntent(this, text).apply {
+				addFlags(
+					Intent.FLAG_ACTIVITY_NO_HISTORY or
+							Intent.FLAG_ACTIVITY_CLEAR_TASK or
+							Intent.FLAG_ACTIVITY_NEW_TASK
+				)
+			})
 			finish()
 			return
 		}
@@ -489,14 +505,18 @@ class CameraActivity : AppCompatActivity() {
 			if (file != null) {
 				val fs = FileInputStream(file.fileDescriptor)
 				val scn = Scanner(fs).useDelimiter("\\A")
-				if (scn.hasNext()) {
-					startActivity(
-						MainActivity.getEncodeIntent(
-							this, scn.next(), true
+					if (scn.hasNext()) {
+						startActivity(
+							EncodeActivity.newIntent(this, scn.next()).apply {
+								addFlags(
+									Intent.FLAG_ACTIVITY_NO_HISTORY or
+											Intent.FLAG_ACTIVITY_CLEAR_TASK or
+											Intent.FLAG_ACTIVITY_NEW_TASK
+								)
+							}
 						)
-					)
-					finish()
-				}
+						finish()
+					}
 				file.close()
 			}
 		}
@@ -689,10 +709,10 @@ class CameraActivity : AppCompatActivity() {
 	}
 
 	private fun storeZoomBarSettings() {
-		val editor = prefs.preferences.edit()
-		editor.putInt(ZOOM_MAX, zoomBar.max)
-		editor.putInt(ZOOM_LEVEL, zoomBar.progress)
-		editor.apply()
+		prefs.preferences.edit {
+			putInt(ZOOM_MAX, zoomBar.max)
+			putInt(ZOOM_LEVEL, zoomBar.progress)
+		}
 	}
 
 	private fun restoreZoomBarSettings() {
@@ -895,9 +915,7 @@ fun Activity.showResult(
 		return
 	}
 	if (!bulkMode) {
-		startActivity(
-			MainActivity.getDecodeIntent(this, scan)
-		)
+		startActivity(DecodeActivity.newIntent(this, scan))
 	}
 }
 
@@ -911,11 +929,11 @@ private fun getReturnIntent(result: Result) = Intent().apply {
 	}
 }
 
-private fun completeUrl(urlTemplate: String, result: Result) = Uri.parse(
+private fun completeUrl(urlTemplate: String, result: Result) = (
 	urlTemplate
 		.replace("{RESULT}", result.text.urlEncode())
 		.replace("{RESULT_BYTES}", result.rawBytes.toHexString())
 		.replace("{FORMAT}", result.format.name.urlEncode())
 		// And support {CODE} from the old ZXing app, too.
 		.replace("{CODE}", result.text.urlEncode())
-)
+).toUri()

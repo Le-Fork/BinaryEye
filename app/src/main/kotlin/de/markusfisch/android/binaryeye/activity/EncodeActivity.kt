@@ -1,12 +1,12 @@
-package de.markusfisch.android.binaryeye.fragment
+package de.markusfisch.android.binaryeye.activity
 
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.SwitchCompat
-import android.view.LayoutInflater
+import androidx.appcompat.widget.SwitchCompat
+import androidx.core.net.toUri
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -20,9 +20,8 @@ import android.widget.Spinner
 import android.widget.TextView
 import de.markusfisch.android.binaryeye.R
 import de.markusfisch.android.binaryeye.adapter.prettifyFormatName
-import de.markusfisch.android.binaryeye.app.addFragment
 import de.markusfisch.android.binaryeye.app.prefs
-import de.markusfisch.android.binaryeye.app.setFragment
+import de.markusfisch.android.binaryeye.net.isEncodeDeeplink
 import de.markusfisch.android.binaryeye.text.unescape
 import de.markusfisch.android.binaryeye.view.hideSoftKeyboard
 import de.markusfisch.android.binaryeye.view.setPaddingFromWindowInsets
@@ -32,7 +31,7 @@ import java.io.InputStream
 import kotlin.math.min
 
 
-class EncodeFragment : Fragment() {
+class EncodeActivity : ScreenActivity() {
 	private lateinit var formatView: Spinner
 	private lateinit var ecLabel: TextView
 	private lateinit var ecSpinner: Spinner
@@ -78,16 +77,16 @@ class EncodeFragment : Fragment() {
 		resultCode: Int,
 		resultData: Intent?
 	) {
+		super.onActivityResult(requestCode, resultCode, resultData)
 		when (requestCode) {
 			PICK_FILE_RESULT_CODE -> {
 				if (resultCode == Activity.RESULT_OK &&
 					resultData != null &&
 					resultData.data != null
 				) {
-					val ac = activity ?: return
-					ac.hideSoftKeyboard(contentView)
+					hideSoftKeyboard(contentView)
 					val uri = resultData.data ?: return
-					bytes = ac.contentResolver?.openInputStream(uri)?.use {
+					bytes = contentResolver?.openInputStream(uri)?.use {
 						it.readBytesMax(4096)
 					} ?: return
 					setEncodeByteArray()
@@ -98,26 +97,18 @@ class EncodeFragment : Fragment() {
 
 	override fun onCreate(state: Bundle?) {
 		super.onCreate(state)
-		setHasOptionsMenu(true)
-	}
-
-	override fun onCreateView(
-		inflater: LayoutInflater,
-		container: ViewGroup?,
-		state: Bundle?
-	): View? {
-		val ac = activity ?: return null
-		ac.setTitle(R.string.compose_barcode)
-
-		val view = inflater.inflate(
+		setTitle(R.string.compose_barcode)
+		val frame = findViewById(R.id.content_frame) as ViewGroup
+		val view = layoutInflater.inflate(
 			R.layout.fragment_encode,
-			container,
+			frame,
 			false
 		)
+		frame.addView(view)
 
 		formatView = view.findViewById(R.id.format)
 		val formatAdapter = ArrayAdapter(
-			ac,
+			this,
 			android.R.layout.simple_spinner_item,
 			writeableFormats.map { it.name.prettifyFormatName() }
 		)
@@ -190,7 +181,7 @@ class EncodeFragment : Fragment() {
 		unescapeCheckBox.isChecked = prefs.expandEscapeSequences
 
 		var complete = false
-		val args = arguments
+		val args = intent?.extras ?: getExtrasFromDeeplink()
 		args?.getString(CONTENT_TEXT)?.let {
 			contentView.setText(it)
 			complete = it.isNotEmpty()
@@ -224,11 +215,10 @@ class EncodeFragment : Fragment() {
 		) {
 			view.post {
 				val content = view.context.getContent() ?: return@post
-				fragmentManager?.setFragment(newEncodeFragment(content))
+				startActivity(newBarcodeIntent(content))
+				finish()
 			}
 		}
-
-		return view
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -265,13 +255,14 @@ class EncodeFragment : Fragment() {
 		hideSoftKeyboard(contentView)
 		val content = getContent() ?: return
 		contentView.post {
-			fragmentManager?.addFragment(newEncodeFragment(content))
+			startActivity(newBarcodeIntent(content))
 		}
 	}
 
-	private fun newEncodeFragment(content: Any): Fragment {
+	private fun newBarcodeIntent(content: Any): Intent {
 		val format = writeableFormats[formatView.selectedItemPosition]
-		return BarcodeFragment.newInstance(
+		return BarcodeActivity.newIntent(
+			this,
 			content,
 			format,
 			format.getErrorCorrectionLevel(ecSpinner.selectedItemPosition),
@@ -321,6 +312,28 @@ class EncodeFragment : Fragment() {
 		unescapeCheckBox.isEnabled = false
 	}
 
+	private fun getExtrasFromDeeplink(): Bundle? {
+		val data = intent?.dataString ?: return null
+		if (!isEncodeDeeplink(data)) {
+			return null
+		}
+		val uri = data.toUri()
+		return Bundle().apply {
+			uri.getQueryParameter("content")?.let {
+				putString(CONTENT_TEXT, it)
+			}
+			uri.getQueryParameter("format")?.let {
+				putString(FORMAT, it)
+			}
+			putBoolean(
+				EXECUTE,
+				uri.getQueryParameter("execute").let {
+					it == "" || it?.toBoolean() == true
+				}
+			)
+		}
+	}
+
 	companion object {
 		private const val CONTENT_TEXT = "content_text"
 		private const val CONTENT_RAW = "content_raw"
@@ -328,11 +341,12 @@ class EncodeFragment : Fragment() {
 		private const val EXECUTE = "execute"
 		private const val PICK_FILE_RESULT_CODE = 1
 
-		fun <T> newInstance(
+		fun <T> newIntent(
+			context: Context,
 			content: T? = null,
 			format: String? = null,
 			execute: Boolean = false
-		): Fragment {
+		): Intent {
 			val args = Bundle()
 			content?.let {
 				when (content) {
@@ -345,9 +359,9 @@ class EncodeFragment : Fragment() {
 				args.putBoolean(EXECUTE, execute)
 			}
 			format?.let { args.putString(FORMAT, it) }
-			val fragment = EncodeFragment()
-			fragment.arguments = args
-			return fragment
+			return Intent(context, EncodeActivity::class.java).apply {
+				putExtras(args)
+			}
 		}
 	}
 }

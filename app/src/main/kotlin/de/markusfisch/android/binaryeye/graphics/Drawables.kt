@@ -5,16 +5,22 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.createBitmap
 
 fun Resources.getBitmapFromDrawable(
 	resId: Int
-): Bitmap = getBitmapFromDrawable(getDrawable(resId, null))
+): Bitmap = getBitmapFromDrawable(
+	ResourcesCompat.getDrawable(this, resId, null) ?: throw Resources.NotFoundException(
+		"Drawable resource ID #0x${resId.toString(16)}"
+	)
+)
 
 private fun getBitmapFromDrawable(drawable: Drawable): Bitmap {
 	if (drawable is BitmapDrawable) {
 		return drawable.bitmap
 	}
-	val bitmap = Bitmap.createBitmap(
+	val bitmap = createBitmap(
 		drawable.intrinsicWidth,
 		drawable.intrinsicHeight,
 		Bitmap.Config.ARGB_8888
