@@ -8,20 +8,33 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Matrix
 import android.graphics.Rect
-import android.hardware.Camera
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.edit
-import androidx.core.net.toUri
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import android.widget.EditText
 import android.widget.SeekBar
+import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.core.Camera
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.FocusMeteringAction
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageProxy
+import androidx.camera.core.Preview
+import androidx.camera.core.TorchState
+import androidx.camera.core.resolutionselector.AspectRatioStrategy
+import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
+import androidx.core.content.ContextCompat
+import androidx.core.content.edit
+import androidx.core.net.toUri
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import de.markusfisch.android.binaryeye.R
 import de.markusfisch.android.binaryeye.adapter.prettifyFormatName
 import de.markusfisch.android.binaryeye.app.PERMISSION_CAMERA
@@ -52,7 +65,6 @@ import de.markusfisch.android.binaryeye.view.setPaddingFromWindowInsets
 import de.markusfisch.android.binaryeye.widget.DetectorView
 import de.markusfisch.android.binaryeye.widget.toast
 import de.markusfisch.android.binaryeye.zxingcpp.migrateBarcodeFormatName
-import de.markusfisch.android.cameraview.widget.CameraView
 import de.markusfisch.android.zxingcpp.ZxingCpp
 import de.markusfisch.android.zxingcpp.ZxingCpp.BarcodeFormat
 import de.markusfisch.android.zxingcpp.ZxingCpp.Binarizer
@@ -61,19 +73,36 @@ import de.markusfisch.android.zxingcpp.ZxingCpp.Result
 import de.markusfisch.android.zxingcpp.ZxingCpp.TextMode
 import java.io.FileInputStream
 import java.util.Scanner
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
 class CameraActivity : AppCompatActivity() {
 	private val frameRoi = Rect()
+	private val previewRect = Rect()
+	private val viewBounds = Rect()
 	private val matrix = Matrix()
+	private val analyzerExecutor: ExecutorService =
+		Executors.newSingleThreadExecutor()
+	private val readerOptions = ReaderOptions(
+		tryHarder = prefs.tryHarder,
+		tryRotate = prefs.autoRotate,
+		tryInvert = true,
+		tryDownscale = true,
+		maxNumberOfSymbols = 1,
+		textMode = TextMode.PLAIN
+	)
 
-	private lateinit var cameraView: CameraView
+	private lateinit var cameraView: PreviewView
 	private lateinit var detectorView: DetectorView
 	private lateinit var zoomBar: SeekBar
 	private lateinit var flashFab: FloatingActionButton
 
+	private var cameraProvider: ProcessCameraProvider? = null
+	private var camera: Camera? = null
 	private var currentProfile = prefs.profile
 	private var shouldStoreSettings = true
 	private var formatsToRead = setOf<BarcodeFormat>()
@@ -87,8 +116,8 @@ class CameraActivity : AppCompatActivity() {
 	private var restrictFormat: String? = null
 	private var searchTerm: Regex? = null
 	private var ignoreNext: String? = null
-	private var fallbackBuffer: IntArray? = null
 	private var requestCameraPermission = true
+	private var useLocalAverage = false
 
 	override fun onRequestPermissionsResult(
 		requestCode: Int,
@@ -101,10 +130,14 @@ class CameraActivity : AppCompatActivity() {
 			grantResults
 		)
 		when (requestCode) {
-			PERMISSION_CAMERA -> if (grantResults.isNotEmpty() &&
-				grantResults[0] != PackageManager.PERMISSION_GRANTED
-			) {
-				toast(R.string.camera_error)
+			PERMISSION_CAMERA -> {
+				if (grantResults.isNotEmpty() &&
+					grantResults[0] != PackageManager.PERMISSION_GRANTED
+				) {
+					toast(R.string.camera_error)
+				} else if (grantResults.isNotEmpty()) {
+					bindCameraUseCases()
+				}
 			}
 		}
 	}
@@ -142,12 +175,12 @@ class CameraActivity : AppCompatActivity() {
 
 		initBars()
 
-		cameraView = findViewById(R.id.camera_view) as CameraView
-		detectorView = findViewById(R.id.detector_view) as DetectorView
-		zoomBar = findViewById(R.id.zoom) as SeekBar
-		flashFab = findViewById(R.id.flash) as FloatingActionButton
+		cameraView = findViewById(R.id.camera_view)
+		detectorView = findViewById(R.id.detector_view)
+		zoomBar = findViewById(R.id.zoom)
+		flashFab = findViewById(R.id.flash)
 
-		initCameraView()
+		initPreviewView()
 		initZoomBar()
 		initDetectorView()
 
@@ -160,7 +193,7 @@ class CameraActivity : AppCompatActivity() {
 
 	override fun onDestroy() {
 		super.onDestroy()
-		fallbackBuffer = null
+		analyzerExecutor.shutdown()
 		releaseToneGenerators()
 	}
 
@@ -180,7 +213,7 @@ class CameraActivity : AppCompatActivity() {
 		// for this session. Otherwise ActivityCompat.requestPermissions()
 		// will trigger onResume() again and again.
 		if (hasCameraPermission(requestCameraPermission)) {
-			openCamera()
+			bindCameraUseCases()
 		}
 		requestCameraPermission = false
 	}
@@ -204,7 +237,7 @@ class CameraActivity : AppCompatActivity() {
 			return false
 		}
 		shouldStoreSettings = false
-		zoomBar.max = 0 // Reset zoom when there are no preferences yet.
+		zoomBar.progress = INITIAL_ZOOM
 		currentProfile = prefs.profile
 		recreate()
 		return true
@@ -257,30 +290,19 @@ class CameraActivity : AppCompatActivity() {
 		}
 	}
 
-	private fun openCamera() {
-		cameraView.openAsync(
-			CameraView.findCameraId(
-				@Suppress("DEPRECATION")
-				if (frontFacing) {
-					Camera.CameraInfo.CAMERA_FACING_FRONT
-				} else {
-					Camera.CameraInfo.CAMERA_FACING_BACK
-				}
-			)
-		)
-	}
-
 	override fun onPause() {
 		super.onPause()
-		closeCamera()
+		unbindCameraUseCases()
 		if (shouldStoreSettings) {
 			storeSettings()
 		}
 		shouldStoreSettings = true
 	}
 
-	private fun closeCamera() {
-		cameraView.close()
+	private fun unbindCameraUseCases() {
+		decoding = false
+		cameraProvider?.unbindAll()
+		camera = null
 	}
 
 	private fun storeSettings() {
@@ -290,7 +312,6 @@ class CameraActivity : AppCompatActivity() {
 
 	override fun onRestoreInstanceState(savedState: Bundle) {
 		super.onRestoreInstanceState(savedState)
-		zoomBar.max = savedState.getInt(ZOOM_MAX)
 		zoomBar.progress = savedState.getInt(ZOOM_LEVEL)
 		frontFacing = savedState.getBoolean(FRONT_FACING)
 		bulkMode = savedState.getBoolean(BULK_MODE)
@@ -299,7 +320,6 @@ class CameraActivity : AppCompatActivity() {
 	}
 
 	override fun onSaveInstanceState(outState: Bundle) {
-		outState.putInt(ZOOM_MAX, zoomBar.max)
 		outState.putInt(ZOOM_LEVEL, zoomBar.progress)
 		outState.putBoolean(FRONT_FACING, frontFacing)
 		outState.putBoolean(BULK_MODE, bulkMode)
@@ -389,7 +409,9 @@ class CameraActivity : AppCompatActivity() {
 				true
 			}
 
-			else -> super.onOptionsItemSelected(item)
+			else -> {
+				super.onOptionsItemSelected(item)
+			}
 		}
 	}
 
@@ -398,9 +420,8 @@ class CameraActivity : AppCompatActivity() {
 	}
 
 	private fun switchCamera() {
-		closeCamera()
 		frontFacing = frontFacing xor true
-		openCamera()
+		bindCameraUseCases()
 	}
 
 	private fun showRestrictionDialog() {
@@ -466,8 +487,13 @@ class CameraActivity : AppCompatActivity() {
 			.setTitle(R.string.profile)
 			.setItems(profiles) { _, which ->
 				val newProfile = when (which) {
-					0 -> null
-					else -> profiles[which]
+					0 -> {
+						null
+					}
+
+					else -> {
+						profiles[which]
+					}
 				}
 				if (currentProfile != newProfile) {
 					storeSettings()
@@ -505,38 +531,44 @@ class CameraActivity : AppCompatActivity() {
 			if (file != null) {
 				val fs = FileInputStream(file.fileDescriptor)
 				val scn = Scanner(fs).useDelimiter("\\A")
-					if (scn.hasNext()) {
-						startActivity(
-							EncodeActivity.newIntent(this, scn.next()).apply {
-								addFlags(
-									Intent.FLAG_ACTIVITY_NO_HISTORY or
-											Intent.FLAG_ACTIVITY_CLEAR_TASK or
-											Intent.FLAG_ACTIVITY_NEW_TASK
-								)
-							}
-						)
-						finish()
-					}
+				if (scn.hasNext()) {
+					startActivity(
+						EncodeActivity.newIntent(this, scn.next()).apply {
+							addFlags(
+								Intent.FLAG_ACTIVITY_NO_HISTORY or
+										Intent.FLAG_ACTIVITY_CLEAR_TASK or
+										Intent.FLAG_ACTIVITY_NEW_TASK
+							)
+						}
+					)
+					finish()
+				}
 				file.close()
 			}
 		}
 	}
 
-	private fun initCameraView() {
-		cameraView.setUseOrientationListener(true)
+	private fun initPreviewView() {
+		cameraView.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+			updateFrameRoiAndMappingMatrix()
+		}
 		@Suppress("ClickableViewAccessibility")
+		val touchSlop = ViewConfiguration.get(this).scaledTouchSlop
 		cameraView.setOnTouchListener(object : View.OnTouchListener {
-			var focus = true
+			var downY = -1f
 			var offset = -1f
 			var progress = 0
+			var hasSwiped = false
 
 			override fun onTouch(v: View?, event: MotionEvent?): Boolean {
 				event ?: return false
 				val pos = event.y
 				when (event.actionMasked) {
 					MotionEvent.ACTION_DOWN -> {
+						downY = pos
 						offset = pos
 						progress = zoomBar.progress
+						hasSwiped = false
 						return true
 					}
 
@@ -551,136 +583,40 @@ class CameraActivity : AppCompatActivity() {
 								maxValue,
 								max(progress + change.roundToInt(), 0)
 							)
+							if (abs(pos - downY) > touchSlop) {
+								hasSwiped = true
+							}
 							return true
 						}
 					}
 
 					MotionEvent.ACTION_UP -> {
-						// Stop calling focusTo() as soon as it returns false
-						// to avoid throwing and catching future exceptions.
-						if (focus) {
-							focus = cameraView.focusTo(v, event.x, event.y)
-							if (focus) {
-								v?.performClick()
-								return true
+						if (!hasSwiped) {
+							camera?.cameraControl?.apply {
+								cancelFocusAndMetering()
+								startFocusAndMetering(
+									FocusMeteringAction.Builder(
+										cameraView.meteringPointFactory.createPoint(
+											event.x,
+											event.y
+										)
+									).build()
+								)
 							}
 						}
+						v?.performClick()
+						return true
 					}
 				}
 				return false
 			}
 		})
-		@Suppress("DEPRECATION")
-		cameraView.setOnCameraListener(object : CameraView.OnCameraListener {
-			override fun onConfigureParameters(
-				parameters: Camera.Parameters
-			) {
-				zoomBar.visibility = if (parameters.isZoomSupported) {
-					restoreZoomBarSettings()
-					val max = parameters.maxZoom
-					if (zoomBar.max != max) {
-						zoomBar.max = max
-						zoomBar.progress = max / 10
-						storeZoomBarSettings()
-					}
-					parameters.zoom = zoomBar.progress
-					View.VISIBLE
-				} else {
-					View.GONE
-				}
-				val sceneModes = parameters.supportedSceneModes
-				sceneModes?.let {
-					for (mode in sceneModes) {
-						if (mode == Camera.Parameters.SCENE_MODE_BARCODE) {
-							parameters.sceneMode = mode
-							break
-						}
-					}
-				}
-				CameraView.setAutoFocus(parameters)
-				updateFlashFab(parameters.flashMode == null)
-			}
-
-			override fun onCameraError() {
-				this@CameraActivity.toast(R.string.camera_error)
-			}
-
-			override fun onCameraReady(camera: Camera) {
-				frameMetrics = FrameMetrics(
-					cameraView.frameWidth,
-					cameraView.frameHeight,
-					cameraView.frameOrientation
-				)
-				updateFrameRoiAndMappingMatrix()
-				ignoreNext = null
-				decoding = true
-				// These settings can't change while the camera is open.
-				val options = ReaderOptions(
-					tryHarder = prefs.tryHarder,
-					tryRotate = prefs.autoRotate,
-					tryInvert = true,
-					tryDownscale = true,
-					maxNumberOfSymbols = 1,
-					textMode = TextMode.PLAIN
-				)
-				var useLocalAverage = false
-				camera.setPreviewCallback { frameData, _ ->
-					if (!decoding ||
-						frameData == null ||
-						frameData.isEmpty()
-					) {
-						return@setPreviewCallback
-					}
-					useLocalAverage = useLocalAverage xor true
-					ZxingCpp.readByteArray(
-						frameData,
-						frameMetrics.width,
-						frameRoi.left, frameRoi.top,
-						frameRoi.width(), frameRoi.height(),
-						frameMetrics.orientation,
-						options.apply {
-							// By default, ZXing uses LOCAL_AVERAGE, but
-							// this does not work well with inverted
-							// barcodes on low-contrast backgrounds.
-							binarizer = if (useLocalAverage) {
-								Binarizer.LOCAL_AVERAGE
-							} else {
-								Binarizer.GLOBAL_HISTOGRAM
-							}
-							formats = formatsToRead
-						}
-					)?.let { results ->
-						val result = results.first()
-						val text = result.text
-						if (text == ignoreNext) {
-							return@let
-						}
-						val term = searchTerm
-						if (term != null &&
-							!text.matches(term) &&
-							!text.contains(term)
-						) {
-							ignoreNext = text
-							errorFeedback()
-							toast(R.string.does_not_match_search_term)
-							return@let
-						}
-						postResult(result)
-						decoding = false
-					}
-				}
-			}
-
-			override fun onPreviewStarted(camera: Camera) {
-			}
-
-			override fun onCameraStopping(camera: Camera) {
-				camera.setPreviewCallback(null)
-			}
-		})
 	}
 
 	private fun initZoomBar() {
+		zoomBar.max = 100
+		zoomBar.progress = INITIAL_ZOOM
+		restoreZoomBarSettings()
 		zoomBar.setOnSeekBarChangeListener(object :
 			SeekBar.OnSeekBarChangeListener {
 			override fun onProgressChanged(
@@ -688,35 +624,29 @@ class CameraActivity : AppCompatActivity() {
 				progress: Int,
 				fromUser: Boolean
 			) {
-				cameraView.camera?.setZoom(progress)
+				val maxRatio = camera?.cameraInfo?.zoomState?.value
+					?.maxZoomRatio ?: return
+				camera?.cameraControl?.setZoomRatio(
+					1f + progress / 100f * (maxRatio - 1f)
+				)
 			}
 
-			override fun onStartTrackingTouch(seekBar: SeekBar) {}
+			override fun onStartTrackingTouch(seekBar: SeekBar) {
+			}
 
-			override fun onStopTrackingTouch(seekBar: SeekBar) {}
+			override fun onStopTrackingTouch(seekBar: SeekBar) {
+				storeZoomBarSettings()
+			}
 		})
-	}
-
-	@Suppress("DEPRECATION")
-	private fun Camera.setZoom(zoom: Int) {
-		try {
-			val params = parameters
-			params.zoom = zoom
-			parameters = params
-		} catch (_: RuntimeException) {
-			// Ignore. There's nothing we can do.
-		}
 	}
 
 	private fun storeZoomBarSettings() {
 		prefs.preferences.edit {
-			putInt(ZOOM_MAX, zoomBar.max)
 			putInt(ZOOM_LEVEL, zoomBar.progress)
 		}
 	}
 
 	private fun restoreZoomBarSettings() {
-		zoomBar.max = prefs.preferences.getInt(ZOOM_MAX, zoomBar.max)
 		zoomBar.progress = prefs.preferences.getInt(
 			ZOOM_LEVEL,
 			zoomBar.progress
@@ -735,52 +665,229 @@ class CameraActivity : AppCompatActivity() {
 		detectorView.cropHandleName = "camera_crop_handle"
 	}
 
+	private fun bindCameraUseCases() {
+		val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
+		cameraProviderFuture.addListener({
+			if (isDestroyed) {
+				return@addListener
+			}
+			val provider = try {
+				cameraProviderFuture.get()
+			} catch (_: Exception) {
+				toast(R.string.camera_error)
+				return@addListener
+			}
+			cameraProvider = provider
+			val resolutionSelector = ResolutionSelector.Builder()
+				.setResolutionStrategy(
+					ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY
+				)
+				.setAspectRatioStrategy(
+					AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY
+				)
+				.setAllowedResolutionMode(
+					ResolutionSelector.PREFER_HIGHER_RESOLUTION_OVER_CAPTURE_RATE
+				)
+				.build()
+			val preview = Preview.Builder()
+				.setResolutionSelector(resolutionSelector)
+				.build()
+			val imageAnalysis = ImageAnalysis.Builder()
+				.setResolutionSelector(resolutionSelector)
+				.setBackpressureStrategy(
+					ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST
+				)
+				.build()
+
+			imageAnalysis.setAnalyzer(analyzerExecutor) { image ->
+				analyzeImage(image)
+			}
+
+			val cameraSelector = CameraSelector.Builder()
+				.requireLensFacing(
+					if (frontFacing) {
+						CameraSelector.LENS_FACING_FRONT
+					} else {
+						CameraSelector.LENS_FACING_BACK
+					}
+				)
+				.build()
+
+			try {
+				provider.unbindAll()
+				camera = provider.bindToLifecycle(
+					this,
+					cameraSelector,
+					preview,
+					imageAnalysis
+				)
+				preview.surfaceProvider = cameraView.surfaceProvider
+				ignoreNext = null
+				decoding = true
+				useLocalAverage = false
+				updateZoomState()
+				updateFlashFab(camera?.cameraInfo?.hasFlashUnit() ?: false)
+				updateFrameRoiAndMappingMatrix()
+			} catch (_: Exception) {
+				camera = null
+				toast(R.string.camera_error)
+			}
+		}, ContextCompat.getMainExecutor(this))
+	}
+
+	private fun analyzeImage(image: ImageProxy) {
+		try {
+			if (!decoding) {
+				return
+			}
+			frameMetrics = FrameMetrics(
+				image.width,
+				image.height,
+				image.imageInfo.rotationDegrees
+			)
+			updateFrameRoiAndMappingMatrix()
+			if (frameRoi.width() < 1 || frameRoi.height() < 1) {
+				return
+			}
+			useLocalAverage = useLocalAverage xor true
+			val yPlane = image.planes[0]
+			ZxingCpp.readYBuffer(
+				yPlane.buffer,
+				yPlane.rowStride,
+				frameRoi,
+				frameMetrics.orientation,
+				readerOptions.apply {
+					binarizer = if (useLocalAverage) {
+						Binarizer.LOCAL_AVERAGE
+					} else {
+						Binarizer.GLOBAL_HISTOGRAM
+					}
+					formats = formatsToRead
+					tryHarder = prefs.tryHarder
+					tryRotate = prefs.autoRotate
+				}
+			)?.firstOrNull()?.let { result ->
+				handleDecodeResult(result)
+			}
+		} finally {
+			image.close()
+		}
+	}
+
+	private fun handleDecodeResult(result: Result) {
+		val text = result.text
+		if (text == ignoreNext) {
+			return
+		}
+		val term = searchTerm
+		if (term != null &&
+			!text.matches(term) &&
+			!text.contains(term)
+		) {
+			ignoreNext = text
+			cameraView.post {
+				errorFeedback()
+				toast(R.string.does_not_match_search_term)
+			}
+			return
+		}
+		decoding = false
+		postResult(result)
+	}
+
+	private fun updateZoomState() {
+		zoomBar.visibility = if (
+			camera?.cameraInfo?.zoomState?.value != null
+		) {
+			View.VISIBLE
+		} else {
+			View.GONE
+		}
+	}
+
 	private fun updateFrameRoiAndMappingMatrix() {
-		val viewRect = cameraView.previewRect
-		if (viewRect.width() < 1 ||
-			viewRect.height() < 1 ||
+		viewBounds.set(0, 0, cameraView.width, cameraView.height)
+		if (viewBounds.width() < 1 ||
+			viewBounds.height() < 1 ||
 			!frameMetrics.isValid()
 		) {
 			return
 		}
+		previewRect.setCovered(
+			viewBounds.width(),
+			viewBounds.height(),
+			frameMetrics
+		)
 		val viewRoi = if (
 			detectorView.roi.width() < 1 ||
 			detectorView.roi.height() < 1
 		) {
-			viewRect
+			viewBounds
 		} else {
 			detectorView.roi
 		}
-		frameRoi.setFrameRoi(frameMetrics, viewRect, viewRoi)
-		matrix.setFrameToView(frameMetrics, viewRect, viewRoi)
+		frameRoi.setFrameRoi(frameMetrics, previewRect, viewRoi)
+		matrix.setFrameToView(frameMetrics, previewRect, viewRoi)
 	}
 
-	private fun updateFlashFab(unavailable: Boolean) {
-		if (unavailable) {
-			flashFab.setImageResource(R.drawable.ic_action_create)
-			flashFab.setOnClickListener { createBarcode() }
-		} else {
+	private fun updateFlashFab(available: Boolean) {
+		if (available) {
 			flashFab.setImageResource(R.drawable.ic_action_flash)
 			flashFab.setOnClickListener { toggleTorchMode() }
+		} else {
+			flashFab.setImageResource(R.drawable.ic_action_create)
+			flashFab.setOnClickListener { createBarcode() }
 		}
 	}
 
-	@Suppress("DEPRECATION")
 	private fun toggleTorchMode() {
-		val camera = cameraView.camera ?: return
-		val parameters = camera.parameters ?: return
-		parameters.flashMode = if (
-			parameters.flashMode != Camera.Parameters.FLASH_MODE_OFF
+		val currentState = camera?.cameraInfo?.torchState?.value ?: return
+		camera?.cameraControl?.enableTorch(
+			currentState != TorchState.ON
+		)
+	}
+
+	private fun Rect.setCovered(
+		viewWidth: Int,
+		viewHeight: Int,
+		frameMetrics: FrameMetrics
+	) {
+		val frameWidth: Int
+		val frameHeight: Int
+		when (frameMetrics.orientation) {
+			90, 270 -> {
+				frameWidth = frameMetrics.height
+				frameHeight = frameMetrics.width
+			}
+
+			else -> {
+				frameWidth = frameMetrics.width
+				frameHeight = frameMetrics.height
+			}
+		}
+		if (frameWidth < 1 || frameHeight < 1) {
+			set(0, 0, 0, 0)
+			return
+		}
+		var coveredWidth = frameWidth
+		var coveredHeight = frameHeight
+		if (viewWidth.toLong() * coveredWidth <
+			viewHeight.toLong() * coveredHeight
 		) {
-			Camera.Parameters.FLASH_MODE_OFF
+			coveredWidth = coveredWidth * viewHeight / coveredHeight
+			coveredHeight = viewHeight
 		} else {
-			Camera.Parameters.FLASH_MODE_TORCH
+			coveredHeight = coveredHeight * viewWidth / coveredWidth
+			coveredWidth = viewWidth
 		}
-		try {
-			camera.parameters = parameters
-		} catch (e: RuntimeException) {
-			toast(e.message ?: getString(R.string.error_flash))
-		}
+		val left = (viewWidth - coveredWidth) / 2
+		val top = (viewHeight - coveredHeight) / 2
+		set(
+			left,
+			top,
+			left + coveredWidth,
+			top + coveredHeight
+		)
 	}
 
 	private fun postResult(result: Result) {
@@ -808,9 +915,11 @@ class CameraActivity : AppCompatActivity() {
 					finish()
 				}
 
-				returnUri != null -> execShareIntent(
-					Intent(Intent.ACTION_VIEW, returnUri)
-				)
+				returnUri != null -> {
+					execShareIntent(
+						Intent(Intent.ACTION_VIEW, returnUri)
+					)
+				}
 
 				else -> {
 					showResult(result, bulkMode)
@@ -825,10 +934,12 @@ class CameraActivity : AppCompatActivity() {
 			if (bulkMode) {
 				when (prefs.ignoreDuplicates()) {
 					Preferences.Companion.IgnoreDuplicates.Consecutive,
-					Preferences.Companion.IgnoreDuplicates.Any ->
+					Preferences.Companion.IgnoreDuplicates.Any -> {
 						ignoreNext = result.text
+					}
 
-					else -> Unit
+					else -> {
+					}
 				}
 				if (prefs.showToastInBulkMode) {
 					toast(result.text)
@@ -842,8 +953,8 @@ class CameraActivity : AppCompatActivity() {
 
 	companion object {
 		private const val PICK_FILE_RESULT_CODE = 1
-		private const val ZOOM_MAX = "zoom_max"
-		private const val ZOOM_LEVEL = "zoom_level"
+		private const val INITIAL_ZOOM = 0
+		private const val ZOOM_LEVEL = "zoom"
 		private const val FRONT_FACING = "front_facing"
 		private const val BULK_MODE = "bulk_mode"
 		private const val RESTRICT_FORMAT = "restrict_format"
@@ -906,7 +1017,9 @@ fun Activity.showResult(
 						R.string.bluetooth_send_fail
 					}
 
-					else -> R.string.bluetooth_send_success
+					else -> {
+						R.string.bluetooth_send_success
+					}
 				}
 			)
 		}
@@ -930,10 +1043,10 @@ private fun getReturnIntent(result: Result) = Intent().apply {
 }
 
 private fun completeUrl(urlTemplate: String, result: Result) = (
-	urlTemplate
-		.replace("{RESULT}", result.text.urlEncode())
-		.replace("{RESULT_BYTES}", result.rawBytes.toHexString())
-		.replace("{FORMAT}", result.format.name.urlEncode())
-		// And support {CODE} from the old ZXing app, too.
-		.replace("{CODE}", result.text.urlEncode())
-).toUri()
+		urlTemplate
+			.replace("{RESULT}", result.text.urlEncode())
+			.replace("{RESULT_BYTES}", result.rawBytes.toHexString())
+			.replace("{FORMAT}", result.format.name.urlEncode())
+			// And support {CODE} from the old ZXing app, too.
+			.replace("{CODE}", result.text.urlEncode())
+		).toUri()
