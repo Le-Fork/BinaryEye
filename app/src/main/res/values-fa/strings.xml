@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="welcome">خوش آمدید!</string>
 	<string name="mode_expert">پیشرفته</string>
@@ -48,6 +49,7 @@
 	<string name="cannot_resolve_action">هیچ برنامه‌ای نمی‌تواند آن را بگشاید</string>
 	<string name="pick_search_engine">یک موتور جست‌وجو برگزینید</string>
 	<string name="format">قالب</string>
+	<string name="all_formats">همه قالب‌ها</string>
 	<string name="size_width_by_height">اندازه به پیکسل: %1$d×%2$d</string>
 	<string name="size_no_magnification">بدون بزرگنمایی</string>
 	<string name="add_quiet_zone">اضافه کردن حوزه ساکت</string>
@@ -65,7 +67,7 @@
 	<string name="restrict_format">محدود کردن قالب</string>
 	<string name="remove_restriction">برداشتن محدودیت</string>
 	<string name="find_code">کد را پیدا کنید</string>
-	<string name="find_code_with_content">چه محتوا؟</string>
+	<string name="find_barcode_with_content">چه محتوا؟</string>
 	<string name="find_code_hint">عبارت یا عبارت منظم</string>
 	<string name="does_not_match_search_term">با عبارت جستجو مطابقت ندارد</string>
 	<string name="scan_for">پویش %s</string>
@@ -94,6 +96,8 @@
 	<string name="follow_system_settings">پیروی از زبان سامانه</string>
 	<string name="show_crop_handle">نمایش محدود کننده برش</string>
 	<string name="show_crop_handle_summary">پویش را به یک منطقه قابل تنظیم محدود می‌کند.</string>
+	<string name="show_crosshairs">نمایش نشانهٔ هدف</string>
+	<string name="show_crosshairs_summary">نشانهٔ هدف را روی ناحیهٔ برش یا تمام صفحه نمایش بده.</string>
 	<string name="barcode_formats">قالب‌های بارکد</string>
 	<string name="zoom_by_swiping">برای بزرگنمایی به بالا یا پایین بکشید</string>
 	<string name="zoom_by_swiping_summary">برای کنترل بزرگنمایی دوربین، در صفحهٔ دوربین به بالا یا پایین بکشید.</string>
@@ -120,6 +124,19 @@
 	<string name="ignore_consecutive_duplicates">نادیده گرفتن موارد تکراری</string>
 	<string name="ignore_any_duplicates">Ignore any duplicates</string>
 	<string name="accept_duplicates">تکراری‌ها را پذیرا باش</string>
+	<string name="ignore_codes">کدهایی برای حذف از تاریخچه</string>
+	<string name="ignore_codes_none">No ignored codes</string>
+	<string name="ignore_codes_empty">No ignored codes yet</string>
+	<plurals name="ignore_codes_count">
+		<item quantity="one">%d ignored code</item>
+		<item quantity="other">%d ignored codes</item>
+	</plurals>
+	<string name="ignore_code_add">Add code</string>
+	<string name="ignore_code_edit">Edit code</string>
+	<string name="ignore_code_regex_hint">e.g. ^FIDO://.*</string>
+	<string name="ignore_code_regex_required">Regex required</string>
+	<string name="ignore_code_regex_invalid">Invalid regex</string>
+	<string name="ignore_code_remove_confirm">Remove this ignored code?</string>
 	<string name="open_immediately">گشودن بلافاصله</string>
 	<string name="open_immediately_summary">بازرسی را رها کنید و محتویات را فورا باز کنید. در صورت فعال بودن ممکن است محتوای مضر را باز کند.</string>
 	<string name="copy_immediately">قرار دادن در تخته‌گیره</string>
@@ -137,7 +154,6 @@
 	<string name="default_search_engine">گشودن دادهٔ نامشخص در</string>
 	<string name="always_ask">همیشه بپرس</string>
 	<string name="open_with_url">داده‌های ناشناخته را با URL باز کنید</string>
-
 	<string name="automated_actions">اقدام‌های خودکار</string>
 	<string name="automated_actions_none">هیچ اقدام خودکاری وجود ندارد</string>
 	<string name="automated_actions_empty">هنوز اقدام خودکاری وجود ندارد</string>
@@ -266,5 +282,4 @@
 	<string name="automated_action_intent_uri_invalid">URI Intent نامعتبر</string>
 	<string name="automated_action_list_custom_intent">Intent سفارشی: %s</string>
 	<string name="automated_action_list_custom_intent_empty">Intent سفارشی</string>
-
 </resources>

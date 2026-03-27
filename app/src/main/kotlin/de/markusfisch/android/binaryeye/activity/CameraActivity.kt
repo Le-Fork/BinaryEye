@@ -18,6 +18,7 @@ import android.view.View
 import android.view.ViewConfiguration
 import android.widget.EditText
 import android.widget.SeekBar
+import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
@@ -37,6 +38,7 @@ import androidx.core.net.toUri
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import de.markusfisch.android.binaryeye.R
 import de.markusfisch.android.binaryeye.adapter.prettifyFormatName
+import de.markusfisch.android.binaryeye.adapter.setupFormatSpinner
 import de.markusfisch.android.binaryeye.app.PERMISSION_CAMERA
 import de.markusfisch.android.binaryeye.app.applyLocale
 import de.markusfisch.android.binaryeye.app.db
@@ -245,6 +247,7 @@ class CameraActivity : AppCompatActivity() {
 
 	private fun loadPreferences() {
 		detectorView.updateCropHandlePos()
+		detectorView.invalidate()
 		updateHintsAndTitle()
 		if (prefs.bulkMode && bulkMode != prefs.bulkMode) {
 			bulkMode = prefs.bulkMode
@@ -390,7 +393,7 @@ class CameraActivity : AppCompatActivity() {
 			}
 
 			R.id.find_code -> {
-				askForCode()
+				askForSearchTerm()
 				true
 			}
 
@@ -447,23 +450,31 @@ class CameraActivity : AppCompatActivity() {
 
 	// Dialogs do not have a parent view.
 	@SuppressLint("InflateParams")
-	private fun askForCode() {
-		val view = layoutInflater.inflate(R.layout.dialog_find_code, null)
+	private fun askForSearchTerm() {
+		val view = layoutInflater.inflate(R.layout.dialog_search_term, null)
 		val editText = view.findViewById<EditText>(R.id.term)
+		val formatView = view.findViewById<Spinner>(R.id.format)
+		val values = setupFormatSpinner(formatView)
 		searchTerm?.let {
 			editText.setText(it.toString())
 		}
+		formatView.setSelection(
+			values.indexOf(restrictFormat ?: "").coerceAtLeast(0)
+		)
 		AlertDialog.Builder(this)
 			.setView(view)
 			.setPositiveButton(android.R.string.ok) { _, _ ->
 				val term = editText.text.toString().trim()
+				restrictFormat = values[formatView.selectedItemPosition].ifEmpty {
+					null
+				}
 				if (!term.isEmpty()) {
 					searchTerm = term.toRegex()
 				} else {
 					searchTerm = null
 				}
 				ignoreNext = null
-				updateTitle()
+				updateHintsAndTitle()
 			}
 			.setNegativeButton(android.R.string.cancel) { _, _ ->
 				// do not change anything on cancel
@@ -974,7 +985,9 @@ fun Activity.showResult(
 		copyToClipboard(result.text)
 	}
 	val scan = result.toScan()
-	if (prefs.useHistory) {
+	if (prefs.useHistory &&
+		!prefs.shouldIgnoreHistoryContent(scan.text, scan.format.name)
+	) {
 		scan.id = db.insertScan(scan)
 	}
 	if (prefs.sendScanActive && prefs.sendScanUrl.isNotEmpty()) {

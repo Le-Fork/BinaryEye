@@ -12,7 +12,8 @@ import de.markusfisch.android.binaryeye.automation.AutomatedAction.Companion.fro
 import de.markusfisch.android.binaryeye.automation.AutomatedAction.Companion.toJsonArray
 import de.markusfisch.android.binaryeye.zxingcpp.migrateBarcodeFormatName
 import de.markusfisch.android.zxingcpp.ZxingCpp.BarcodeFormat
-import org.json.JSONArray
+import de.markusfisch.android.binaryeye.preference.IgnoreCode.Companion.fromJsonArray as ignoreCodesFromJsonArray
+import de.markusfisch.android.binaryeye.preference.IgnoreCode.Companion.toJsonArray as ignoreCodesToJsonArray
 
 class Preferences {
 	lateinit var defaultPreferences: SharedPreferences
@@ -62,6 +63,11 @@ class Preferences {
 	var showCropHandle = true
 		set(value) {
 			apply(SHOW_CROP_HANDLE, value)
+			field = value
+		}
+	var showCrosshairs = false
+		set(value) {
+			apply(SHOW_CROSSHAIRS, value)
 			field = value
 		}
 	var zoomBySwiping = true
@@ -119,6 +125,8 @@ class Preferences {
 			apply(IGNORE_DUPLICATES_NAME, value)
 			field = value
 		}
+	var ignoreCodes = mutableListOf(IgnoreCode(DEFAULT_IGNORE_CODE_PATTERN))
+		private set
 	var copyImmediately = false
 		set(value) {
 			apply(COPY_IMMEDIATELY, value)
@@ -279,13 +287,13 @@ class Preferences {
 
 	fun saveProfiles() {
 		defaultPreferences.edit {
-			putString(PROFILES, JSONArray(profiles).toString())
+			putString(PROFILES, org.json.JSONArray(profiles).toString())
 		}
 	}
 
 	fun loadProfiles() {
 		profiles.clear()
-		JSONArray(
+		org.json.JSONArray(
 			defaultPreferences.getString(PROFILES, "[]")
 		).let {
 			profiles.addAll(Array(it.length()) { i -> it.getString(i) })
@@ -316,6 +324,10 @@ class Preferences {
 		showCropHandle = preferences.getBoolean(
 			SHOW_CROP_HANDLE,
 			showCropHandle
+		)
+		showCrosshairs = preferences.getBoolean(
+			SHOW_CROSSHAIRS,
+			showCrosshairs
 		)
 		zoomBySwiping = preferences.getBoolean(ZOOM_BY_SWIPING, zoomBySwiping)
 		autoRotate = preferences.getBoolean(AUTO_ROTATE, autoRotate)
@@ -351,6 +363,14 @@ class Preferences {
 		)?.also {
 			ignoreDuplicatesName = it
 		}
+		ignoreCodes = ignoreCodesFromJsonArray(
+			preferences.getString(
+				IGNORE_CODES,
+				ignoreCodesToJsonArray(
+					listOf(IgnoreCode(DEFAULT_IGNORE_CODE_PATTERN))
+				)
+			) ?: "[]"
+		)
 		copyImmediately = preferences.getBoolean(
 			COPY_IMMEDIATELY,
 			copyImmediately
@@ -429,6 +449,14 @@ class Preferences {
 		automatedActions = actions.toMutableList()
 		apply(AUTOMATED_ACTIONS, toJsonArray(actions))
 	}
+
+	fun setIgnoreCodes(patterns: List<IgnoreCode>) {
+		ignoreCodes = patterns.toMutableList()
+		apply(IGNORE_CODES, ignoreCodesToJsonArray(patterns))
+	}
+
+	fun shouldIgnoreHistoryContent(content: String, format: String): Boolean =
+		ignoreCodes.any { it.matches(content, format) }
 
 	private fun addFormatsOnUpdate(
 		restored: Set<String>,
@@ -525,6 +553,7 @@ class Preferences {
 		private const val PROFILE = "profile"
 		private const val BARCODE_FORMATS = "formats"
 		private const val SHOW_CROP_HANDLE = "show_crop_handle"
+		private const val SHOW_CROSSHAIRS = "show_crosshairs"
 		private const val ZOOM_BY_SWIPING = "zoom_by_swiping"
 		private const val AUTO_ROTATE = "auto_rotate"
 		private const val TRY_HARDER = "try_harder"
@@ -536,6 +565,7 @@ class Preferences {
 		private const val BEEP_TONE_NAME = "beep_tone_name"
 		private const val USE_HISTORY = "use_history"
 		private const val IGNORE_DUPLICATES_NAME = "ignore_duplicates_name"
+		private const val IGNORE_CODES = "ignore_codes"
 		private const val OPEN_IMMEDIATELY = "open_immediately"
 		private const val COPY_IMMEDIATELY = "copy_immediately"
 		private const val SHOW_META_DATA = "show_meta_data"
@@ -559,5 +589,6 @@ class Preferences {
 		private const val BRIGHTEN_SCREEN = "brighten_screen"
 		private const val PREVIEW_SCALE = "preview_scale"
 		private const val AUTOMATED_ACTIONS = "automated_actions"
+		private const val DEFAULT_IGNORE_CODE_PATTERN = "^FIDO://.*"
 	}
 }

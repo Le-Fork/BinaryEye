@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="welcome">Welkom!</string>
 	<string name="mode_expert">Geavanceerd</string>
@@ -15,10 +16,10 @@
 		<item quantity="other">%2$d tekens, %1$s</item>
 	</plurals>
 	<string name="error_correction_level">Foutcorrectie niveau</string>
-	<string name="error_correction_level_l" formatted="false">Laag (~7&#37; correction)</string>
-	<string name="error_correction_level_m" formatted="false">Middelhoog (~15&#37; correction)</string>
-	<string name="error_correction_level_q" formatted="false">Kwartiel (~25&#37; correction)</string>
-	<string name="error_correction_level_h" formatted="false">Hoog (~30&#37; correction)</string>
+	<string name="error_correction_level_l" formatted="false">Laag (~7% correction)</string>
+	<string name="error_correction_level_m" formatted="false">Middelhoog (~15% correction)</string>
+	<string name="error_correction_level_q" formatted="false">Kwartiel (~25% correction)</string>
+	<string name="error_correction_level_h" formatted="false">Hoog (~30% correction)</string>
 	<string name="label">Label</string>
 	<string name="colors">Voor- en achtergrond</string>
 	<string name="colors_black_on_white">Zwart op wit</string>
@@ -48,6 +49,7 @@
 	<string name="cannot_resolve_action">Geen enkele toepassing kan dat openen</string>
 	<string name="pick_search_engine">Zoekmachine kiezen</string>
 	<string name="format">Formaat</string>
+	<string name="all_formats">Alle formaten</string>
 	<string name="size_width_by_height">Afmeting in pixels: %1$d×%2$d</string>
 	<string name="size_no_magnification">Geen vergroting</string>
 	<string name="add_quiet_zone">Voeg stille zone toe</string>
@@ -65,7 +67,7 @@
 	<string name="restrict_format">Beperk formaat</string>
 	<string name="remove_restriction">Verwijder beperking</string>
 	<string name="find_code">Vind code</string>
-	<string name="find_code_with_content">Wat voor inhoud?</string>
+	<string name="find_barcode_with_content">Wat voor inhoud?</string>
 	<string name="find_code_hint">Zoekterm of reguliere expressie</string>
 	<string name="does_not_match_search_term">Komt niet overeen met zoekterm</string>
 	<string name="scan_for">Scan %s</string>
@@ -94,6 +96,8 @@
 	<string name="follow_system_settings">Systeeminstellingen volgen</string>
 	<string name="show_crop_handle">Bijsnijd-begrenzer tonen</string>
 	<string name="show_crop_handle_summary">Scannen beperken tot een aanpasbaar gebied</string>
+	<string name="show_crosshairs">Dradenkruis tonen</string>
+	<string name="show_crosshairs_summary">Toon een dradenkruis over het uitsnedevenster of het hele scherm.</string>
 	<string name="barcode_formats">Barcode formaten</string>
 	<string name="zoom_by_swiping">Camera zoomen door omhoog/omlaag te vegen</string>
 	<string name="zoom_by_swiping_summary">De zoom van de camera bedienen door in het camerascherm omhoog of omlaag te vegen.</string>
@@ -120,6 +124,19 @@
 	<string name="ignore_consecutive_duplicates">Duplicaten negeren</string>
 	<string name="ignore_any_duplicates">Ignore any duplicates</string>
 	<string name="accept_duplicates">Accepteer duplicaten</string>
+	<string name="ignore_codes">Codes uitsluiten van geschiedenis</string>
+	<string name="ignore_codes_none">No ignored codes</string>
+	<string name="ignore_codes_empty">No ignored codes yet</string>
+	<plurals name="ignore_codes_count">
+		<item quantity="one">%d ignored code</item>
+		<item quantity="other">%d ignored codes</item>
+	</plurals>
+	<string name="ignore_code_add">Add code</string>
+	<string name="ignore_code_edit">Edit code</string>
+	<string name="ignore_code_regex_hint">e.g. ^FIDO://.*</string>
+	<string name="ignore_code_regex_required">Regex required</string>
+	<string name="ignore_code_regex_invalid">Invalid regex</string>
+	<string name="ignore_code_remove_confirm">Remove this ignored code?</string>
 	<string name="open_immediately">Inhoud direct tonen, zonder inspectie</string>
 	<string name="open_immediately_summary">Sla inspectie over en open meteen de inhoud. Indien geactiveerd, kan schadelijke inhoud worden geopend.</string>
 	<string name="copy_immediately">Meteen op klembord zetten</string>
@@ -137,7 +154,6 @@
 	<string name="default_search_engine">Onbekende data openen in</string>
 	<string name="always_ask">Altijd vragen</string>
 	<string name="open_with_url">URL om niet bekende data te openen</string>
-
 	<string name="automated_actions">Geautomatiseerde acties</string>
 	<string name="automated_actions_none">Geen geautomatiseerde acties</string>
 	<string name="automated_actions_empty">Nog geen geautomatiseerde acties</string>
@@ -266,5 +282,4 @@
 	<string name="automated_action_intent_uri_invalid">Ongeldige Intent-URI</string>
 	<string name="automated_action_list_custom_intent">Aangepaste intent: %s</string>
 	<string name="automated_action_list_custom_intent_empty">Aangepaste intent</string>
-
 </resources>

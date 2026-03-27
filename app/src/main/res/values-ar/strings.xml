@@ -53,6 +53,7 @@
 	<string name="cannot_resolve_action">لم يتم العثور على تطبيق يمكنه فتح ذلك</string>
 	<string name="pick_search_engine">اختر محرك البحث</string>
 	<string name="format">التنسيق</string>
+	<string name="all_formats">كل التنسيقات</string>
 	<string name="size_width_by_height">الحجم بالبكسل: %1$d×%2$d</string>
 	<string name="size_no_magnification">بدون تكبير</string>
 	<string name="add_quiet_zone">إضافة منطقة هادئة</string>
@@ -70,7 +71,7 @@
 	<string name="restrict_format">تحديد التنسيق</string>
 	<string name="remove_restriction">إزالة التحديد</string>
 	<string name="find_code">العثور على الرمز</string>
-	<string name="find_code_with_content">ما المحتوى؟</string>
+	<string name="find_barcode_with_content">ما المحتوى؟</string>
 	<string name="find_code_hint">مصطلح أو تعبير عادي</string>
 	<string name="does_not_match_search_term">لا يطابق مصطلح البحث</string>
 	<string name="scan_for">مسح %s</string>
@@ -99,6 +100,8 @@
 	<string name="follow_system_settings">اتبع إعدادات النظام</string>
 	<string name="show_crop_handle">عرض محدد الاقتصاص</string>
 	<string name="show_crop_handle_summary">حصر المسح في منطقة قابلة للتخصيص.</string>
+	<string name="show_crosshairs">إظهار خطوط التصويب</string>
+	<string name="show_crosshairs_summary">إظهار خطوط التصويب فوق منطقة الاقتصاص أو على كامل الشاشة.</string>
 	<string name="barcode_formats">تنسيقات Barcode</string>
 	<string name="zoom_by_swiping">مرر لأعلى أو لأسفل للتكبير/التصغير</string>
 	<string name="zoom_by_swiping_summary">مرر لأعلى أو لأسفل على واجهة الكاميرا للتحكم في التكبير/التصغير لها.</string>
@@ -125,6 +128,23 @@
 	<string name="ignore_consecutive_duplicates">النسخ المكررة المتتالية</string>
 	<string name="ignore_any_duplicates">أي نسخ مكررة</string>
 	<string name="accept_duplicates">قبول النسخ المكررة</string>
+	<string name="ignore_codes">رموز لاستبعادها من السجل</string>
+	<string name="ignore_codes_none">No ignored codes</string>
+	<string name="ignore_codes_empty">No ignored codes yet</string>
+	<plurals name="ignore_codes_count">
+		<item quantity="zero">%d رمز مستبعد من السجل</item>
+		<item quantity="one">%d ignored code</item>
+		<item quantity="two">%d رمزان مستبعدان من السجل</item>
+		<item quantity="few">%d رموز مستبعدة من السجل</item>
+		<item quantity="many">%d رمزًا مستبعدًا من السجل</item>
+		<item quantity="other">%d ignored codes</item>
+	</plurals>
+	<string name="ignore_code_add">Add code</string>
+	<string name="ignore_code_edit">Edit code</string>
+	<string name="ignore_code_regex_hint">e.g. ^FIDO://.*</string>
+	<string name="ignore_code_regex_required">Regex required</string>
+	<string name="ignore_code_regex_invalid">Invalid regex</string>
+	<string name="ignore_code_remove_confirm">Remove this ignored code?</string>
 	<string name="open_immediately">فتح مباشرةً</string>
 	<string name="open_immediately_summary">تخطي الفحص وفتح المحتويات على الفور. قد يتم فتح محتويات ضارة إذا تم تمكينه.</string>
 	<string name="copy_immediately">نسخ تلقائي إلى الحافظة</string>
@@ -142,7 +162,6 @@
 	<string name="default_search_engine">فتح البيانات المجهولة في</string>
 	<string name="always_ask">اسأل دائمًا</string>
 	<string name="open_with_url">فتح البيانات المجهولة باستخدام رابط</string>
-
 	<string name="automated_actions">الإجراءات الآلية</string>
 	<string name="automated_actions_none">لا توجد إجراءات آلية</string>
 	<string name="automated_actions_empty">لا توجد إجراءات آلية بعد</string>
@@ -275,5 +294,4 @@
 	<string name="automated_action_intent_uri_invalid">عنوان Intent غير صالح</string>
 	<string name="automated_action_list_custom_intent">Intent مخصص: %s</string>
 	<string name="automated_action_list_custom_intent_empty">Intent مخصص</string>
-
 </resources>

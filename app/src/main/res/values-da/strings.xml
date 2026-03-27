@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="welcome">Velkommen!</string>
 	<string name="mode_expert">Avanceret</string>
@@ -15,10 +16,10 @@
 		<item quantity="other">%2$d karakterer, %1$s</item>
 	</plurals>
 	<string name="error_correction_level">Fejlkorrektionsniveau</string>
-	<string name="error_correction_level_l" formatted="false">Lav (~7&#37; korrigering)</string>
-	<string name="error_correction_level_m" formatted="false">Medium (~15&#37; korrigering)</string>
-	<string name="error_correction_level_q" formatted="false">Kvartil (~25&#37; korrigering)</string>
-	<string name="error_correction_level_h" formatted="false">Høj (~30&#37; korrigering)</string>
+	<string name="error_correction_level_l" formatted="false">Lav (~7% korrigering)</string>
+	<string name="error_correction_level_m" formatted="false">Medium (~15% korrigering)</string>
+	<string name="error_correction_level_q" formatted="false">Kvartil (~25% korrigering)</string>
+	<string name="error_correction_level_h" formatted="false">Høj (~30% korrigering)</string>
 	<string name="label">Mærke</string>
 	<string name="colors">For- og baggrund</string>
 	<string name="colors_black_on_white">Sort på hvidt</string>
@@ -48,6 +49,7 @@
 	<string name="cannot_resolve_action">Inge applikation kan åbne det</string>
 	<string name="pick_search_engine">Vælg en søgemaskine</string>
 	<string name="format">Format</string>
+	<string name="all_formats">Alle formater</string>
 	<string name="size_width_by_height">Størrelse i pixels: %1$d×%2$d</string>
 	<string name="size_no_magnification">Ingen forstørrelse</string>
 	<string name="add_quiet_zone">Tilføj stille zone</string>
@@ -65,7 +67,7 @@
 	<string name="restrict_format">Begræns format</string>
 	<string name="remove_restriction">Fjern begrænsningen</string>
 	<string name="find_code">Find kode</string>
-	<string name="find_code_with_content">Hvad indhold?</string>
+	<string name="find_barcode_with_content">Hvad indhold?</string>
 	<string name="find_code_hint">Term eller regulært udtryk</string>
 	<string name="does_not_match_search_term">Stemmer ikke overens med søgeterm</string>
 	<string name="scan_for">Scan %s</string>
@@ -94,6 +96,8 @@
 	<string name="follow_system_settings">Følg systemindstillingerne</string>
 	<string name="show_crop_handle">Vis beskæringsbegrænser</string>
 	<string name="show_crop_handle_summary">Begræns scanning til et område, der kan tilpasses.</string>
+	<string name="show_crosshairs">Vis trådkors</string>
+	<string name="show_crosshairs_summary">Vis et trådkors over beskæringsområdet eller hele skærmen.</string>
 	<string name="barcode_formats">Stregkode formater</string>
 	<string name="zoom_by_swiping">Stryg op/ned for at zoome</string>
 	<string name="zoom_by_swiping_summary">Stryg op eller ned på kameraskærmen for at styre kameraets zoom.</string>
@@ -120,6 +124,19 @@
 	<string name="ignore_consecutive_duplicates">Ignorer dubletter</string>
 	<string name="ignore_any_duplicates">Ignore any duplicates</string>
 	<string name="accept_duplicates">Accept duplicates</string>
+	<string name="ignore_codes">Koder der udelades fra historikken</string>
+	<string name="ignore_codes_none">No ignored codes</string>
+	<string name="ignore_codes_empty">No ignored codes yet</string>
+	<plurals name="ignore_codes_count">
+		<item quantity="one">%d ignored code</item>
+		<item quantity="other">%d ignored codes</item>
+	</plurals>
+	<string name="ignore_code_add">Add code</string>
+	<string name="ignore_code_edit">Edit code</string>
+	<string name="ignore_code_regex_hint">e.g. ^FIDO://.*</string>
+	<string name="ignore_code_regex_required">Regex required</string>
+	<string name="ignore_code_regex_invalid">Invalid regex</string>
+	<string name="ignore_code_remove_confirm">Remove this ignored code?</string>
 	<string name="open_immediately">Åbn straks</string>
 	<string name="open_immediately_summary">Spring inspektion over og åbn indholdet med det samme. Kan åbne skadeligt indhold, hvis det er aktiveret.</string>
 	<string name="copy_immediately">Læg i udklipsholderen</string>
@@ -137,7 +154,6 @@
 	<string name="default_search_engine">Åbn ukendte data i</string>
 	<string name="always_ask">Spørg altid</string>
 	<string name="open_with_url">Åbn ukendte data med URL</string>
-
 	<string name="automated_actions">Automatiserede handlinger</string>
 	<string name="automated_actions_none">Ingen automatiserede handlinger</string>
 	<string name="automated_actions_empty">Ingen automatiserede handlinger endnu</string>
@@ -266,5 +282,4 @@
 	<string name="automated_action_intent_uri_invalid">Ugyldig Intent-URI</string>
 	<string name="automated_action_list_custom_intent">Brugerdefineret intent: %s</string>
 	<string name="automated_action_list_custom_intent_empty">Brugerdefineret intent</string>
-
 </resources>

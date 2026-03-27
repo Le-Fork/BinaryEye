@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="welcome">¡Bienvenido!</string>
 	<string name="mode_expert">Avanzado</string>
@@ -12,13 +13,14 @@
 	<string name="binary_data">(datos binarios)</string>
 	<plurals name="barcode_info">
 		<item quantity="one">%2$d carácter, %1$s</item>
+		<item quantity="many"></item>
 		<item quantity="other">%2$d caracteres, %1$s</item>
 	</plurals>
 	<string name="error_correction_level">Nivel de corrección de errores</string>
-	<string name="error_correction_level_l" formatted="false">Bajo (~7&#37; de correción)</string>
-	<string name="error_correction_level_m" formatted="false">Medio (~15&#37; de correción)</string>
-	<string name="error_correction_level_q" formatted="false">Cuartil (~25&#37; de correción)</string>
-	<string name="error_correction_level_h" formatted="false">Alto (~30&#37; de correción)</string>
+	<string name="error_correction_level_l" formatted="false">Bajo (~7% de correción)</string>
+	<string name="error_correction_level_m" formatted="false">Medio (~15% de correción)</string>
+	<string name="error_correction_level_q" formatted="false">Cuartil (~25% de correción)</string>
+	<string name="error_correction_level_h" formatted="false">Alto (~30% de correción)</string>
 	<string name="label">Etiqueta</string>
 	<string name="colors">Color frontal y fondo</string>
 	<string name="colors_black_on_white">Negro sobre blanco</string>
@@ -48,6 +50,7 @@
 	<string name="cannot_resolve_action">Ninguna aplicación puede abrir eso</string>
 	<string name="pick_search_engine">Seleccionar motor de búsqueda</string>
 	<string name="format">Formato</string>
+	<string name="all_formats">Todos los formatos</string>
 	<string name="size_width_by_height">Tamaño en píxeles: %1$d×%2$d</string>
 	<string name="size_no_magnification">Sin aumento</string>
 	<string name="add_quiet_zone">Agregar zona tranquila</string>
@@ -65,7 +68,7 @@
 	<string name="restrict_format">Restringir formato</string>
 	<string name="remove_restriction">Eliminar restricción</string>
 	<string name="find_code">Encontrar código</string>
-	<string name="find_code_with_content">¿Qué contenido?</string>
+	<string name="find_barcode_with_content">¿Qué contenido?</string>
 	<string name="find_code_hint">Término o expresión regular</string>
 	<string name="does_not_match_search_term">No coincide con el término de búsqueda</string>
 	<string name="scan_for">Escanear %s</string>
@@ -94,6 +97,8 @@
 	<string name="follow_system_settings">Seguir los ajustes del sistema</string>
 	<string name="show_crop_handle">Mostrar delimitador de recorte</string>
 	<string name="show_crop_handle_summary">Permite personalizar la región a escanear.</string>
+	<string name="show_crosshairs">Mostrar mira</string>
+	<string name="show_crosshairs_summary">Mostrar una mira sobre el área de recorte o toda la pantalla.</string>
 	<string name="barcode_formats">Formatos de códigos de barras</string>
 	<string name="zoom_by_swiping">Ampliar deslizando arriba/abajo</string>
 	<string name="zoom_by_swiping_summary">Deslice el dedo hacia arriba o abajo sobre la pantalla para controlar el zoom de la cámara.</string>
@@ -102,7 +107,7 @@
 	<string name="try_harder">Optimizar la precisión del lector</string>
 	<string name="try_harder_summary">Active esta opción para códigos muy difíciles de leer. Esto afectará al rendimiento.</string>
 	<string name="show_toast_in_bulk_mode">Mostrar datos en el modo constante</string>
-	<string name="show_toast_in_bulk_mode_summary">Mostrar brevemente los datos escaneados al escanear constantemente. </string>
+	<string name="show_toast_in_bulk_mode_summary">Mostrar brevemente los datos escaneados al escanear constantemente.</string>
 	<string name="vibrate">Vibración al detectar</string>
 	<string name="vibrate_summary">El dispositivo vibra cuando se reconoce un código.</string>
 	<string name="beep">Sonido al detectar</string>
@@ -120,6 +125,19 @@
 	<string name="ignore_consecutive_duplicates">Ignorar duplicados</string>
 	<string name="ignore_any_duplicates">Ignore any duplicates</string>
 	<string name="accept_duplicates">Aceptar duplicados</string>
+	<string name="ignore_codes">Códigos que excluir del historial</string>
+	<string name="ignore_codes_none">No ignored codes</string>
+	<string name="ignore_codes_empty">No ignored codes yet</string>
+	<plurals name="ignore_codes_count">
+		<item quantity="one">%d ignored code</item>
+		<item quantity="other">%d ignored codes</item>
+	</plurals>
+	<string name="ignore_code_add">Add code</string>
+	<string name="ignore_code_edit">Edit code</string>
+	<string name="ignore_code_regex_hint">e.g. ^FIDO://.*</string>
+	<string name="ignore_code_regex_required">Regex required</string>
+	<string name="ignore_code_regex_invalid">Invalid regex</string>
+	<string name="ignore_code_remove_confirm">Remove this ignored code?</string>
 	<string name="open_immediately">Abrir inmediatamente</string>
 	<string name="open_immediately_summary">Omite la inspección y abre el contenido inmediatamente. Podría abrir contenido dañino si está activado.</string>
 	<string name="copy_immediately">Copiar en el portapapeles</string>
@@ -137,7 +155,6 @@
 	<string name="default_search_engine">Abrir datos desconocidos en</string>
 	<string name="always_ask">Preguntar siempre</string>
 	<string name="open_with_url">Abrir datos desconocidos en la URL</string>
-
 	<string name="automated_actions">Acciones automatizadas</string>
 	<string name="automated_actions_none">No hay acciones automatizadas</string>
 	<string name="automated_actions_empty">Aún no hay acciones automatizadas</string>
@@ -266,5 +283,4 @@
 	<string name="automated_action_intent_uri_invalid">URI de Intent no válida</string>
 	<string name="automated_action_list_custom_intent">Intent personalizado: %s</string>
 	<string name="automated_action_list_custom_intent_empty">Intent personalizado</string>
-
 </resources>

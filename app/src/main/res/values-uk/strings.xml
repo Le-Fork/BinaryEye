@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="welcome">Ласкаво просимо!</string>
 	<string name="mode_expert">Розширений</string>
@@ -14,12 +15,13 @@
 		<item quantity="one">%2$d символ, %1$s</item>
 		<item quantity="few">%2$d символи, %1$s</item>
 		<item quantity="many">%2$d символів, %1$s</item>
+		<item quantity="other">%2$d символів, %1$s</item>
 	</plurals>
 	<string name="error_correction_level">Рівень виправлення помилок</string>
-	<string name="error_correction_level_l" formatted="false">Низький (~7&#37; виправлення)</string>
-	<string name="error_correction_level_m" formatted="false">Середній (~15&#37; виправлення)</string>
-	<string name="error_correction_level_q" formatted="false">Квартиль (~25&#37; виправлення)</string>
-	<string name="error_correction_level_h" formatted="false">Високий (~30&#37; виправлення)</string>
+	<string name="error_correction_level_l" formatted="false">Низький (~7% виправлення)</string>
+	<string name="error_correction_level_m" formatted="false">Середній (~15% виправлення)</string>
+	<string name="error_correction_level_q" formatted="false">Квартиль (~25% виправлення)</string>
+	<string name="error_correction_level_h" formatted="false">Високий (~30% виправлення)</string>
 	<string name="label">Мітка</string>
 	<string name="colors">Кольори</string>
 	<string name="colors_black_on_white">Чорний на білому</string>
@@ -49,6 +51,7 @@
 	<string name="cannot_resolve_action">Жодey додаток не може цього відкрити</string>
 	<string name="pick_search_engine">Вибрати пошукову систему</string>
 	<string name="format">Формат</string>
+	<string name="all_formats">Усі формати</string>
 	<string name="size_width_by_height">Розмір у пікселях: %1$d×%2$d</string>
 	<string name="size_no_magnification">Без збільшення</string>
 	<string name="add_quiet_zone">Додати тиху зону</string>
@@ -66,7 +69,7 @@
 	<string name="restrict_format">Обмежити формат</string>
 	<string name="remove_restriction">Скасувати обмеження</string>
 	<string name="find_code">Знайти код</string>
-	<string name="find_code_with_content">Що саме вміст?</string>
+	<string name="find_barcode_with_content">Що саме вміст?</string>
 	<string name="find_code_hint">Термін або регулярний вираз</string>
 	<string name="does_not_match_search_term">Не відповідає пошуковому терміну</string>
 	<string name="scan_for">Сканувати %s</string>
@@ -95,6 +98,8 @@
 	<string name="follow_system_settings">Дотримуватись системних налаштувань</string>
 	<string name="show_crop_handle">Обмежити область сканування</string>
 	<string name="show_crop_handle_summary">Обмежити сканування до налаштованої області.</string>
+	<string name="show_crosshairs">Показувати перехрестя</string>
+	<string name="show_crosshairs_summary">Показувати перехрестя в межах області сканування або на весь екран.</string>
 	<string name="barcode_formats">Формати штрих-коду</string>
 	<string name="zoom_by_swiping">Проведіть пальцем вгору/вниз, для масштабування</string>
 	<string name="zoom_by_swiping_summary">Проведіть пальцем вгору або вниз по екрану камери, щоб керувати масштабуванням камери.</string>
@@ -121,6 +126,21 @@
 	<string name="ignore_consecutive_duplicates">Послідовні дублікати</string>
 	<string name="ignore_any_duplicates">Будь-які дублікати</string>
 	<string name="accept_duplicates">Приймати дублікати</string>
+	<string name="ignore_codes">Коди, виключені з історії</string>
+	<string name="ignore_codes_none">No ignored codes</string>
+	<string name="ignore_codes_empty">No ignored codes yet</string>
+	<plurals name="ignore_codes_count">
+		<item quantity="one">%d ignored code</item>
+		<item quantity="few">%d виключені з історії коди</item>
+		<item quantity="many">%d виключених з історії кодів</item>
+		<item quantity="other">%d ignored codes</item>
+	</plurals>
+	<string name="ignore_code_add">Add code</string>
+	<string name="ignore_code_edit">Edit code</string>
+	<string name="ignore_code_regex_hint">e.g. ^FIDO://.*</string>
+	<string name="ignore_code_regex_required">Regex required</string>
+	<string name="ignore_code_regex_invalid">Invalid regex</string>
+	<string name="ignore_code_remove_confirm">Remove this ignored code?</string>
 	<string name="open_immediately">Відкривати негайно</string>
 	<string name="open_immediately_summary">Пропустити перегляд та негайно відкрити вміст. Якщо увімкнено, може відкрити шкідливий вміст.</string>
 	<string name="copy_immediately">Помістити в буфер обміну</string>
@@ -138,7 +158,6 @@
 	<string name="default_search_engine">Відкривати невідомі дані в</string>
 	<string name="always_ask">Завжди запитувати</string>
 	<string name="open_with_url">Відкривати невідомі дані за допомогою URL</string>
-
 	<string name="automated_actions">Автоматичні дії</string>
 	<string name="automated_actions_none">Немає автоматичних дій</string>
 	<string name="automated_actions_empty">Ще немає автоматичних дій</string>
@@ -269,5 +288,4 @@
 	<string name="automated_action_intent_uri_invalid">Некоректний URI Intent</string>
 	<string name="automated_action_list_custom_intent">Користувацький Intent: %s</string>
 	<string name="automated_action_list_custom_intent_empty">Користувацький Intent</string>
-
 </resources>

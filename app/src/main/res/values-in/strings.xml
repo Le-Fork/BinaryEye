@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="welcome">Selamat datang!</string>
 	<string name="mode_expert">Lanjutan</string>
@@ -14,10 +15,10 @@
 		<item quantity="other">%1$s, %2$d karakter</item>
 	</plurals>
 	<string name="error_correction_level">Level koreksi kesalahan</string>
-	<string name="error_correction_level_l" formatted="false">Rendah (~7&#37; koreksi)</string>
-	<string name="error_correction_level_m" formatted="false">Medium (~15&#37; koreksi)</string>
-	<string name="error_correction_level_q" formatted="false">Kuartil (~25&#37; koreksi)</string>
-	<string name="error_correction_level_h" formatted="false">Tinggi (~30&#37; koreksi)</string>
+	<string name="error_correction_level_l" formatted="false">Rendah (~7% koreksi)</string>
+	<string name="error_correction_level_m" formatted="false">Medium (~15% koreksi)</string>
+	<string name="error_correction_level_q" formatted="false">Kuartil (~25% koreksi)</string>
+	<string name="error_correction_level_h" formatted="false">Tinggi (~30% koreksi)</string>
 	<string name="label">Etiqueta</string>
 	<string name="colors">Muka dan latar belakang</string>
 	<string name="colors_black_on_white">Hitam di atas putih</string>
@@ -47,6 +48,7 @@
 	<string name="cannot_resolve_action">Tidak ada aplikasi yang bisa membukanya</string>
 	<string name="pick_search_engine">Pilih mesin pencari</string>
 	<string name="format">Format</string>
+	<string name="all_formats">Semua format</string>
 	<string name="size_width_by_height">Ukuran dalam piksel: %1$d×%2$d</string>
 	<string name="size_no_magnification">無放大</string>
 	<string name="add_quiet_zone">Dodaj cichą strefę</string>
@@ -64,7 +66,7 @@
 	<string name="restrict_format">Batasi format</string>
 	<string name="remove_restriction">Hapus pembatasan</string>
 	<string name="find_code">Trouver le code</string>
-	<string name="find_code_with_content">Quel contenu?</string>
+	<string name="find_barcode_with_content">Quel contenu?</string>
 	<string name="find_code_hint">Istilah atau ekspresi reguler</string>
 	<string name="does_not_match_search_term">Tidak cocok dengan istilah pencarian</string>
 	<string name="scan_for">Pindai %s</string>
@@ -93,6 +95,8 @@
 	<string name="follow_system_settings">Ikuti pengaturan sistem</string>
 	<string name="show_crop_handle">Tampilkan pembatas pemotongan</string>
 	<string name="show_crop_handle_summary">Batasi pemindaian ke batas area tertentu.</string>
+	<string name="show_crosshairs">Tampilkan garis bidik</string>
+	<string name="show_crosshairs_summary">Tampilkan garis bidik pada area potong atau seluruh layar.</string>
 	<string name="barcode_formats">Format barcode</string>
 	<string name="zoom_by_swiping">Geser ke atas/bawah untuk memperbesar</string>
 	<string name="zoom_by_swiping_summary">Geser layar kamera ke atas atau ke bawah untuk mengontrol perbesaran gambar.</string>
@@ -119,6 +123,19 @@
 	<string name="ignore_consecutive_duplicates">Abaikan duplikat</string>
 	<string name="ignore_any_duplicates">Ignore any duplicates</string>
 	<string name="accept_duplicates">Accept duplicates</string>
+	<string name="ignore_codes">Kode yang dikecualikan dari riwayat</string>
+	<string name="ignore_codes_none">No ignored codes</string>
+	<string name="ignore_codes_empty">No ignored codes yet</string>
+	<plurals name="ignore_codes_count">
+		<item quantity="one">%d ignored code</item>
+		<item quantity="other">%d ignored codes</item>
+	</plurals>
+	<string name="ignore_code_add">Add code</string>
+	<string name="ignore_code_edit">Edit code</string>
+	<string name="ignore_code_regex_hint">e.g. ^FIDO://.*</string>
+	<string name="ignore_code_regex_required">Regex required</string>
+	<string name="ignore_code_regex_invalid">Invalid regex</string>
+	<string name="ignore_code_remove_confirm">Remove this ignored code?</string>
 	<string name="open_immediately">Buka segera</string>
 	<string name="open_immediately_summary">Lewati inspeksi dan segera buka konten. Mungkin membuka konten berbahaya jika diaktifkan.</string>
 	<string name="copy_immediately">Simpan ke dalam clipboard</string>
@@ -136,7 +153,6 @@
 	<string name="default_search_engine">Buka data tak dikenal di</string>
 	<string name="always_ask">Selalu tanya</string>
 	<string name="open_with_url">Buka data tak dikenal dengan URL</string>
-
 	<string name="automated_actions">Tindakan otomatis</string>
 	<string name="automated_actions_none">Tidak ada tindakan otomatis</string>
 	<string name="automated_actions_empty">Belum ada tindakan otomatis</string>
@@ -264,5 +280,4 @@
 	<string name="automated_action_intent_uri_invalid">URI Intent tidak valid</string>
 	<string name="automated_action_list_custom_intent">Intent kustom: %s</string>
 	<string name="automated_action_list_custom_intent_empty">Intent kustom</string>
-
 </resources>

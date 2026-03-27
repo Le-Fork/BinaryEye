@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="welcome">欢迎！</string>
 	<string name="mode_expert">高级</string>
@@ -47,6 +48,7 @@
 	<string name="cannot_resolve_action">没有应用可以打开它</string>
 	<string name="pick_search_engine">选择一个搜索引擎</string>
 	<string name="format">编码格式</string>
+	<string name="all_formats">所有格式</string>
 	<string name="size_width_by_height">图片尺寸: %1$d×%2$d</string>
 	<string name="size_no_magnification">无放大</string>
 	<string name="add_quiet_zone">添加安静区</string>
@@ -64,7 +66,7 @@
 	<string name="restrict_format">严格模式（扫描指定编码格式）</string>
 	<string name="remove_restriction">解除限制</string>
 	<string name="find_code">找码</string>
-	<string name="find_code_with_content">什么内容？</string>
+	<string name="find_barcode_with_content">什么内容？</string>
 	<string name="find_code_hint">术语或正则表达式</string>
 	<string name="does_not_match_search_term">与搜索词不匹配</string>
 	<string name="scan_for">扫描 %s</string>
@@ -93,6 +95,8 @@
 	<string name="follow_system_settings">跟随系统设置</string>
 	<string name="show_crop_handle">限制扫描范围</string>
 	<string name="show_crop_handle_summary">把扫描区域限制在选定范围内。</string>
+	<string name="show_crosshairs">显示十字线</string>
+	<string name="show_crosshairs_summary">在裁切区域或整个屏幕上显示十字线。</string>
 	<string name="barcode_formats">条码格式</string>
 	<string name="zoom_by_swiping">上下滑动缩放</string>
 	<string name="zoom_by_swiping_summary">在扫描界面上下滑动以控制相机缩放。</string>
@@ -119,6 +123,19 @@
 	<string name="ignore_consecutive_duplicates">不保存重复历史</string>
 	<string name="ignore_any_duplicates">Ignore any duplicates</string>
 	<string name="accept_duplicates">接受重复项</string>
+	<string name="ignore_codes">从历史记录中排除的代码</string>
+	<string name="ignore_codes_none">No ignored codes</string>
+	<string name="ignore_codes_empty">No ignored codes yet</string>
+	<plurals name="ignore_codes_count">
+		<item quantity="one">%d ignored code</item>
+		<item quantity="other">%d ignored codes</item>
+	</plurals>
+	<string name="ignore_code_add">Add code</string>
+	<string name="ignore_code_edit">Edit code</string>
+	<string name="ignore_code_regex_hint">e.g. ^FIDO://.*</string>
+	<string name="ignore_code_regex_required">Regex required</string>
+	<string name="ignore_code_regex_invalid">Invalid regex</string>
+	<string name="ignore_code_remove_confirm">Remove this ignored code?</string>
 	<string name="open_immediately">不检查内容立即打开链接</string>
 	<string name="open_immediately_summary">跳过检查并立即打开内容。如果启用，可能会打开有害内容。</string>
 	<string name="copy_immediately">自动复制扫描结果到剪贴板</string>
@@ -136,7 +153,6 @@
 	<string name="default_search_engine">打开未知数据方式</string>
 	<string name="always_ask">总是询问</string>
 	<string name="open_with_url">使用 URL 打开未知数据</string>
-
 	<string name="automated_actions">自动操作</string>
 	<string name="automated_actions_none">没有自动操作</string>
 	<string name="automated_actions_empty">尚无自动操作</string>
@@ -264,5 +280,4 @@
 	<string name="automated_action_intent_uri_invalid">Intent URI 无效</string>
 	<string name="automated_action_list_custom_intent">自定义 Intent：%s</string>
 	<string name="automated_action_list_custom_intent_empty">自定义 Intent</string>
-
 </resources>

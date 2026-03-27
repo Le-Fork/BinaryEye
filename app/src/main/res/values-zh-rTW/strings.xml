@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="welcome">歡迎！</string>
 	<string name="mode_expert">進階</string>
@@ -14,10 +15,10 @@
 		<item quantity="other">%2$d 個字元，%1$s</item>
 	</plurals>
 	<string name="error_correction_level">糾錯等級</string>
-	<string name="error_correction_level_l" formatted="false">低 (~7&#37; 準確度)</string>
-	<string name="error_correction_level_m" formatted="false">中 (~15&#37; 準確度)</string>
-	<string name="error_correction_level_q" formatted="false">較高 (~25&#37; 準確度)</string>
-	<string name="error_correction_level_h" formatted="false">高 (~30&#37; 準確度)</string>
+	<string name="error_correction_level_l" formatted="false">低 (~7% 準確度)</string>
+	<string name="error_correction_level_m" formatted="false">中 (~15% 準確度)</string>
+	<string name="error_correction_level_q" formatted="false">較高 (~25% 準確度)</string>
+	<string name="error_correction_level_h" formatted="false">高 (~30% 準確度)</string>
 	<string name="label">名稱</string>
 	<string name="colors">前景與背景</string>
 	<string name="colors_black_on_white">白底黑字</string>
@@ -47,6 +48,7 @@
 	<string name="cannot_resolve_action">沒有可開啟這個項目的應用程式</string>
 	<string name="pick_search_engine">選擇一個搜尋引擎</string>
 	<string name="format">格式</string>
+	<string name="all_formats">所有格式</string>
 	<string name="size_width_by_height">圖片尺寸: %1$d×%2$d</string>
 	<string name="size_no_magnification">不擴大</string>
 	<string name="add_quiet_zone">加上空白邊界</string>
@@ -64,7 +66,7 @@
 	<string name="restrict_format">限制格式</string>
 	<string name="remove_restriction">移除限制</string>
 	<string name="find_code">尋找代碼</string>
-	<string name="find_code_with_content">什麼內容？</string>
+	<string name="find_barcode_with_content">什麼內容？</string>
 	<string name="find_code_hint">術語或正規表達式</string>
 	<string name="does_not_match_search_term">與搜尋詞不符</string>
 	<string name="scan_for">掃描 %s</string>
@@ -93,6 +95,8 @@
 	<string name="follow_system_settings">跟隨系統設定</string>
 	<string name="show_crop_handle">顯示裁切範圍選擇器</string>
 	<string name="show_crop_handle_summary">將掃描區域限制在指定範圍內</string>
+	<string name="show_crosshairs">顯示十字線</string>
+	<string name="show_crosshairs_summary">在裁切範圍或整個畫面上顯示十字線。</string>
 	<string name="barcode_formats">條碼格式</string>
 	<string name="zoom_by_swiping">上下滑動縮放</string>
 	<string name="zoom_by_swiping_summary">透過上下滑動在掃描介面控制相機縮放</string>
@@ -119,6 +123,19 @@
 	<string name="ignore_consecutive_duplicates">不儲存重複歷史記錄</string>
 	<string name="ignore_any_duplicates">略過任何重複項目</string>
 	<string name="accept_duplicates">接受重複</string>
+	<string name="ignore_codes">從歷史記錄排除的代碼</string>
+	<string name="ignore_codes_none">No ignored codes</string>
+	<string name="ignore_codes_empty">No ignored codes yet</string>
+	<plurals name="ignore_codes_count">
+		<item quantity="one">%d ignored code</item>
+		<item quantity="other">%d ignored codes</item>
+	</plurals>
+	<string name="ignore_code_add">Add code</string>
+	<string name="ignore_code_edit">Edit code</string>
+	<string name="ignore_code_regex_hint">e.g. ^FIDO://.*</string>
+	<string name="ignore_code_regex_required">Regex required</string>
+	<string name="ignore_code_regex_invalid">Invalid regex</string>
+	<string name="ignore_code_remove_confirm">Remove this ignored code?</string>
 	<string name="open_immediately">立即開啟</string>
 	<string name="open_immediately_summary">跳過檢查並立即開啟。可能會開啟有害內容</string>
 	<string name="copy_immediately">自動複製掃描結果到剪貼簿</string>
@@ -136,7 +153,6 @@
 	<string name="default_search_engine">開啟未知資料的方式</string>
 	<string name="always_ask">總是詢問</string>
 	<string name="open_with_url">使用 URL 開啟未知資料</string>
-
 	<string name="automated_actions">自動操作</string>
 	<string name="automated_actions_none">沒有自動操作</string>
 	<string name="automated_actions_empty">尚無自動操作</string>
@@ -264,5 +280,4 @@
 	<string name="automated_action_intent_uri_invalid">Intent URI 無效</string>
 	<string name="automated_action_list_custom_intent">自訂 Intent：%s</string>
 	<string name="automated_action_list_custom_intent_empty">自訂 Intent</string>
-
 </resources>

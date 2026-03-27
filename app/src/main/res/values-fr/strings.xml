@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="welcome">Bienvenue !</string>
 	<string name="mode_expert">Avancé</string>
@@ -12,6 +13,7 @@
 	<string name="binary_data">(données binaires)</string>
 	<plurals name="barcode_info">
 		<item quantity="one">%2$d caractère, %1$s</item>
+		<item quantity="many"></item>
 		<item quantity="other">%2$d caractères, %1$s</item>
 	</plurals>
 	<string name="error_correction_level">Niveau de correction d\'erreur</string>
@@ -48,6 +50,7 @@
 	<string name="cannot_resolve_action">Aucune application ne peut ouvrir cela</string>
 	<string name="pick_search_engine">Choisir un moteur de recherche</string>
 	<string name="format">Format</string>
+	<string name="all_formats">Tous les formats</string>
 	<string name="size_width_by_height">Taille en pixels : %1$d×%2$d</string>
 	<string name="size_no_magnification">Pas de grossissement</string>
 	<string name="add_quiet_zone">Ajouter une zone blanche</string>
@@ -65,7 +68,7 @@
 	<string name="restrict_format">Restreindre le format</string>
 	<string name="remove_restriction">Supprimer la restriction</string>
 	<string name="find_code">Trouver un code</string>
-	<string name="find_code_with_content">Quel contenu ?</string>
+	<string name="find_barcode_with_content">Quel contenu ?</string>
 	<string name="find_code_hint">Terme ou expression régulière</string>
 	<string name="does_not_match_search_term">Ne correspond pas au terme de recherche</string>
 	<string name="scan_for">Numériser %s</string>
@@ -94,6 +97,8 @@
 	<string name="follow_system_settings">Suivre les réglages du système</string>
 	<string name="show_crop_handle">Afficher le contrôle du cadrage</string>
 	<string name="show_crop_handle_summary">Restreindre le scan à une zone personnalisée.</string>
+	<string name="show_crosshairs">Afficher le réticule</string>
+	<string name="show_crosshairs_summary">Afficher le réticule sur la zone de cadrage ou sur tout l\'écran.</string>
 	<string name="barcode_formats">Formats de codes-barres</string>
 	<string name="zoom_by_swiping">Balayage haut/bas pour zoomer</string>
 	<string name="zoom_by_swiping_summary">Balayer vers le haut ou vers le bas de l\'écran pour contrôler le niveau de zoom de la caméra.</string>
@@ -120,6 +125,19 @@
 	<string name="ignore_consecutive_duplicates">Ignorer les doublons consécutifs</string>
 	<string name="ignore_any_duplicates">Ignorer tous les doublons</string>
 	<string name="accept_duplicates">Autoriser les doublons</string>
+	<string name="ignore_codes">Codes a exclure de l\'historique</string>
+	<string name="ignore_codes_none">No ignored codes</string>
+	<string name="ignore_codes_empty">No ignored codes yet</string>
+	<plurals name="ignore_codes_count">
+		<item quantity="one">%d ignored code</item>
+		<item quantity="other">%d ignored codes</item>
+	</plurals>
+	<string name="ignore_code_add">Add code</string>
+	<string name="ignore_code_edit">Edit code</string>
+	<string name="ignore_code_regex_hint">e.g. ^FIDO://.*</string>
+	<string name="ignore_code_regex_required">Regex required</string>
+	<string name="ignore_code_regex_invalid">Invalid regex</string>
+	<string name="ignore_code_remove_confirm">Remove this ignored code?</string>
 	<string name="open_immediately">Ouvrir immédiatement</string>
 	<string name="open_immediately_summary">Ignorer l\'inspection et ouvrir le contenu immédiatement. Si cette option est activée, cela peut ouvrir un contenu nocif.</string>
 	<string name="copy_immediately">Copier dans le presse-papiers</string>
@@ -137,7 +155,6 @@
 	<string name="default_search_engine">Ouvrir les données inconnues dans</string>
 	<string name="always_ask">Toujours demander</string>
 	<string name="open_with_url">Ouvrir les données inconnues avec l\'URL</string>
-
 	<string name="automated_actions">Actions automatiques</string>
 	<string name="automated_actions_none">Aucune action automatique</string>
 	<string name="automated_actions_empty">Pas encore d’actions automatiques</string>
@@ -266,5 +283,4 @@
 	<string name="automated_action_intent_uri_invalid">URI d’Intent invalide</string>
 	<string name="automated_action_list_custom_intent">Intent personnalisé : %s</string>
 	<string name="automated_action_list_custom_intent_empty">Intent personnalisé</string>
-
 </resources>

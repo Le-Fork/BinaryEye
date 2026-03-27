@@ -48,6 +48,7 @@
 	<string name="cannot_resolve_action">No application can open that</string>
 	<string name="pick_search_engine">Pick a search engine</string>
 	<string name="format">Format</string>
+	<string name="all_formats">All formats</string>
 	<string name="size_width_by_height">Size in pixels: %1$d×%2$d</string>
 	<string name="size_no_magnification">No magnification</string>
 	<string name="add_quiet_zone">Add quiet zone</string>
@@ -65,7 +66,7 @@
 	<string name="restrict_format">Restrict format</string>
 	<string name="remove_restriction">Remove restriction</string>
 	<string name="find_code">Find code</string>
-	<string name="find_code_with_content">What content?</string>
+	<string name="find_barcode_with_content">What content?</string>
 	<string name="find_code_hint">Term or regular expression</string>
 	<string name="does_not_match_search_term">Does not match search term</string>
 	<string name="scan_for">Scan %s</string>
@@ -94,6 +95,8 @@
 	<string name="follow_system_settings">Follow system settings</string>
 	<string name="show_crop_handle">Show cropping limiter</string>
 	<string name="show_crop_handle_summary">Restrict scanning to a customizable region.</string>
+	<string name="show_crosshairs">Show crosshairs</string>
+	<string name="show_crosshairs_summary">Show crosshairs over the crop window or full screen.</string>
 	<string name="barcode_formats">Barcode formats</string>
 	<string name="zoom_by_swiping">Swipe up/down to zoom</string>
 	<string name="zoom_by_swiping_summary">Swipe up or down in camera screen to control the camera zoom.</string>
@@ -120,6 +123,19 @@
 	<string name="ignore_consecutive_duplicates">Consecutive duplicates</string>
 	<string name="ignore_any_duplicates">Any duplicates</string>
 	<string name="accept_duplicates">Accept duplicates</string>
+	<string name="ignore_codes">Codes to exclude from history</string>
+	<string name="ignore_codes_none">No ignored codes</string>
+	<string name="ignore_codes_empty">No ignored codes yet</string>
+	<plurals name="ignore_codes_count">
+		<item quantity="one">%d ignored code</item>
+		<item quantity="other">%d ignored codes</item>
+	</plurals>
+	<string name="ignore_code_add">Add code</string>
+	<string name="ignore_code_edit">Edit code</string>
+	<string name="ignore_code_regex_hint">e.g. ^FIDO://.*</string>
+	<string name="ignore_code_regex_required">Regex required</string>
+	<string name="ignore_code_regex_invalid">Invalid regex</string>
+	<string name="ignore_code_remove_confirm">Remove this ignored code?</string>
 	<string name="open_immediately">Open immediately</string>
 	<string name="open_immediately_summary">Skip inspection and open contents immediately. May open harmful content if enabled.</string>
 	<string name="copy_immediately">Put into clipboard</string>

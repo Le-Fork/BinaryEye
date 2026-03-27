@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="welcome">Witamy!</string>
 	<string name="mode_expert">Zaawansowany</string>
@@ -22,6 +23,7 @@
 	<string name="compose_barcode">Utwórz kod kreskowy</string>
 	<string name="history">Historia</string>
 	<string name="format">Format</string>
+	<string name="all_formats">Wszystkie formaty</string>
 	<string name="add_to_history">Dodaj do historii</string>
 	<string name="added_to_history">Dodano do historii</string>
 	<string name="pin_item">Przypnij</string>
@@ -99,7 +101,7 @@
 	<string name="restrict_format">Ogranicz format</string>
 	<string name="remove_restriction">Usuń ograniczenie</string>
 	<string name="find_code">Znajdź kod</string>
-	<string name="find_code_with_content">Jaki treść?</string>
+	<string name="find_barcode_with_content">Jaki treść?</string>
 	<string name="find_code_hint">Termin lub wyrażenie regularne</string>
 	<string name="does_not_match_search_term">Nie pasuje do wyszukiwania</string>
 	<string name="scan_for">Skan %s</string>
@@ -138,6 +140,8 @@
 	<string name="copy_immediately_summary">Automatycznie skopiuj zeskanowaną zawartość do schowka. Pamiętaj, że inne aplikacje mogą szpiegować Twój schowek w tle.</string>
 	<string name="show_crop_handle">Pokazuj ogranicznik przycinania</string>
 	<string name="show_crop_handle_summary">Ogranicz skanowanie do konfigurowalnego regionu.</string>
+	<string name="show_crosshairs">Pokazuj krzyż celowniczy</string>
+	<string name="show_crosshairs_summary">Pokazuj krzyż celowniczy w obszarze przycinania lub na całym ekranie.</string>
 	<string name="barcode_formats">Formaty kodów</string>
 	<string name="search_web">Szukaj w sieci</string>
 	<string name="search_scan">Szukaj skanu</string>
@@ -146,10 +150,24 @@
 	<string name="ignore_consecutive_duplicates">Nie zapisuj kolejnych duplikatów</string>
 	<string name="ignore_any_duplicates">Ignore any duplicates</string>
 	<string name="accept_duplicates">Akceptuj duplikaty</string>
+	<string name="ignore_codes">Kody wykluczane z historii</string>
+	<string name="ignore_codes_none">No ignored codes</string>
+	<string name="ignore_codes_empty">No ignored codes yet</string>
+	<plurals name="ignore_codes_count">
+		<item quantity="one">%d ignored code</item>
+		<item quantity="few">%d wykluczane kody</item>
+		<item quantity="many">%d wykluczanych kodów</item>
+		<item quantity="other">%d ignored codes</item>
+	</plurals>
+	<string name="ignore_code_add">Add code</string>
+	<string name="ignore_code_edit">Edit code</string>
+	<string name="ignore_code_regex_hint">e.g. ^FIDO://.*</string>
+	<string name="ignore_code_regex_required">Regex required</string>
+	<string name="ignore_code_regex_invalid">Invalid regex</string>
+	<string name="ignore_code_remove_confirm">Remove this ignored code?</string>
 	<string name="default_search_engine">Otwórz nieznane dane w</string>
 	<string name="always_ask">Zawsze pytaj</string>
 	<string name="open_with_url">Otwieraj nieznane dane za pomocą adresu URL</string>
-
 	<string name="automated_actions">Automatyczne akcje</string>
 	<string name="automated_actions_none">Brak automatycznych akcji</string>
 	<string name="automated_actions_empty">Brak jeszcze automatycznych akcji</string>
@@ -270,5 +288,4 @@
 	<string name="automated_action_intent_uri_invalid">Nieprawidłowy URI Intent</string>
 	<string name="automated_action_list_custom_intent">Niestandardowy Intent: %s</string>
 	<string name="automated_action_list_custom_intent_empty">Niestandardowy Intent</string>
-
 </resources>

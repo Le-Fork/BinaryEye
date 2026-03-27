@@ -49,6 +49,7 @@
 	<string name="cannot_resolve_action">Nenhum app pode abrir isto</string>
 	<string name="pick_search_engine">Escolha um motor de pesquisa</string>
 	<string name="format">Formato</string>
+	<string name="all_formats">Todos os formatos</string>
 	<string name="size_width_by_height">Tamanho em pixels: %1$d×%2$d</string>
 	<string name="size_no_magnification">Sem magnificação</string>
 	<string name="add_quiet_zone">Adicionar zona tranquila</string>
@@ -66,7 +67,7 @@
 	<string name="restrict_format">Restringir formato</string>
 	<string name="remove_restriction">Remover restrição</string>
 	<string name="find_code">Encontrar código</string>
-	<string name="find_code_with_content">Qual conteúdo?</string>
+	<string name="find_barcode_with_content">Qual conteúdo?</string>
 	<string name="find_code_hint">Termo ou expressão regular</string>
 	<string name="does_not_match_search_term">Não corresponde ao termo de busca</string>
 	<string name="scan_for">Digitalizar %s</string>
@@ -95,6 +96,8 @@
 	<string name="follow_system_settings">Seguir configurações do sistema</string>
 	<string name="show_crop_handle">Mostrar limitador customizável</string>
 	<string name="show_crop_handle_summary">Permite limitar a digitalização à uma área específica.</string>
+	<string name="show_crosshairs">Mostrar mira</string>
+	<string name="show_crosshairs_summary">Mostrar uma mira sobre a área de recorte ou na tela inteira.</string>
 	<string name="barcode_formats">Formatos de código de barras</string>
 	<string name="zoom_by_swiping">Deslize para ajustar o zoom</string>
 	<string name="zoom_by_swiping_summary">Deslize para baixo/cima na tela para ajustar zoom da câmera.</string>
@@ -121,6 +124,19 @@
 	<string name="ignore_consecutive_duplicates">Duplicatas consecutivas</string>
 	<string name="ignore_any_duplicates">Quaisquer duplicatas</string>
 	<string name="accept_duplicates">Aceitar duplicatas</string>
+	<string name="ignore_codes">Códigos para excluir do histórico</string>
+	<string name="ignore_codes_none">No ignored codes</string>
+	<string name="ignore_codes_empty">No ignored codes yet</string>
+	<plurals name="ignore_codes_count">
+		<item quantity="one">%d ignored code</item>
+		<item quantity="other">%d ignored codes</item>
+	</plurals>
+	<string name="ignore_code_add">Add code</string>
+	<string name="ignore_code_edit">Edit code</string>
+	<string name="ignore_code_regex_hint">e.g. ^FIDO://.*</string>
+	<string name="ignore_code_regex_required">Regex required</string>
+	<string name="ignore_code_regex_invalid">Invalid regex</string>
+	<string name="ignore_code_remove_confirm">Remove this ignored code?</string>
 	<string name="open_immediately">Abrir imediatamente</string>
 	<string name="open_immediately_summary">Pular a inspeção e abrir um conteúdo instantaneamente. Pode abrir conteúdo malicioso se ativado.</string>
 	<string name="copy_immediately">Botar na área de transferência</string>
@@ -138,7 +154,6 @@
 	<string name="default_search_engine">Abrir dados desconhecidos em</string>
 	<string name="always_ask">Sempre perguntar</string>
 	<string name="open_with_url">Abrir dados desconhecidos com URL</string>
-
 	<string name="automated_actions">Ações automatizadas</string>
 	<string name="automated_actions_none">Nenhuma ação automatizada</string>
 	<string name="automated_actions_empty">Ainda não há ações automatizadas</string>
@@ -267,5 +282,4 @@
 	<string name="automated_action_intent_uri_invalid">URI de Intent inválido</string>
 	<string name="automated_action_list_custom_intent">Intent personalizado: %s</string>
 	<string name="automated_action_list_custom_intent_empty">Intent personalizado</string>
-
 </resources>
