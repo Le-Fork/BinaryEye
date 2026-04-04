@@ -43,8 +43,10 @@ import de.markusfisch.android.binaryeye.app.hasLocationPermission
 import de.markusfisch.android.binaryeye.app.hasWritePermission
 import de.markusfisch.android.binaryeye.app.prefs
 import de.markusfisch.android.binaryeye.content.ContentBarcode
+import de.markusfisch.android.binaryeye.content.EpcQrParser
 import de.markusfisch.android.binaryeye.content.IdlParser
 import de.markusfisch.android.binaryeye.content.copyToClipboard
+import de.markusfisch.android.binaryeye.content.epcQrToRes
 import de.markusfisch.android.binaryeye.content.idlToRes
 import de.markusfisch.android.binaryeye.content.shareAsFile
 import de.markusfisch.android.binaryeye.content.shareText
@@ -252,15 +254,14 @@ class DecodeActivity : AbstractBaseActivity() {
 	}
 
 	private fun updateViews(text: String, bytes: ByteArray) {
+		dataView.fillDataView(text, bytes)
+		stampView.setTrackingLink(bytes, format)
 		formatView.text = resources.getQuantityString(
 			R.plurals.barcode_info,
 			bytes.size,
 			format.prettifyFormatName(),
 			bytes.size
 		)
-		hexView.showIf(prefs.showHexDump) { v ->
-			v.text = hexDump(bytes)
-		}
 		recreationView.showIf(prefs.showRecreation) { v ->
 			val unmodified: Boolean
 			val content = if (isBinary) {
@@ -302,8 +303,9 @@ class DecodeActivity : AbstractBaseActivity() {
 				clearRecreation()
 			}
 		}
-		dataView.fillDataView(text, bytes)
-		stampView.setTrackingLink(bytes, format)
+		hexView.showIf(prefs.showHexDump) { v ->
+			v.text = hexDump(bytes)
+		}
 	}
 
 	private fun clearRecreation() {
@@ -331,6 +333,9 @@ class DecodeActivity : AbstractBaseActivity() {
 					context.idlToRes(id) to value
 				}
 			)
+		}
+		EpcQrParser.parse(text)?.let {
+			items.putAll(it.elements.mapKeys { (id, _) -> context.epcQrToRes(id) })
 		}
 		when (action) {
 			is MatMsgAction -> items.putAll(
