@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -22,10 +23,12 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
 import androidx.core.net.toUri
+import androidx.core.widget.TextViewCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import de.markusfisch.android.binaryeye.R
 import de.markusfisch.android.binaryeye.actions.ActionRegistry
@@ -38,6 +41,7 @@ import de.markusfisch.android.binaryeye.actions.web.WebAction
 import de.markusfisch.android.binaryeye.actions.wifi.WifiAction
 import de.markusfisch.android.binaryeye.actions.wifi.WifiConnector
 import de.markusfisch.android.binaryeye.adapter.prettifyFormatName
+import de.markusfisch.android.binaryeye.adapter.toFormatDescriptionResId
 import de.markusfisch.android.binaryeye.app.db
 import de.markusfisch.android.binaryeye.app.hasLocationPermission
 import de.markusfisch.android.binaryeye.app.hasWritePermission
@@ -45,6 +49,7 @@ import de.markusfisch.android.binaryeye.app.prefs
 import de.markusfisch.android.binaryeye.content.ContentBarcode
 import de.markusfisch.android.binaryeye.content.EpcQrParser
 import de.markusfisch.android.binaryeye.content.IdlParser
+import de.markusfisch.android.binaryeye.content.SealParser
 import de.markusfisch.android.binaryeye.content.copyToClipboard
 import de.markusfisch.android.binaryeye.content.epcQrToRes
 import de.markusfisch.android.binaryeye.content.idlToRes
@@ -76,9 +81,10 @@ import kotlin.math.roundToInt
 class DecodeActivity : AbstractBaseActivity() {
 	private lateinit var contentView: EditText
 	private lateinit var formatView: TextView
-	private lateinit var dataView: TableLayout
+	private lateinit var dataView: LinearLayout
 	private lateinit var metaView: TableLayout
 	private lateinit var hexView: TextView
+	private lateinit var formatDescriptionView: TextView
 	private lateinit var stampView: TextView
 	private lateinit var recreationView: ImageView
 	private lateinit var labelView: EditText
@@ -99,6 +105,8 @@ class DecodeActivity : AbstractBaseActivity() {
 	private var action = ActionRegistry.DEFAULT_ACTION
 	private var isBinary = false
 	private var originalBytes: ByteArray = ByteArray(0)
+	private var lastParsedDataItems: List<Field> = emptyList()
+	private var showingDimmed = false
 	private var label: String? = null
 	private var recreationSize = 0
 
@@ -139,14 +147,22 @@ class DecodeActivity : AbstractBaseActivity() {
 		dataView = findViewById(R.id.data)
 		metaView = findViewById(R.id.meta)
 		hexView = findViewById(R.id.hex)
+		formatDescriptionView = findViewById(R.id.format_description)
 		stampView = findViewById(R.id.stamp)
 		recreationView = findViewById(R.id.recreation)
 		labelView = findViewById(R.id.label)
 		fab = findViewById(R.id.open)
 
 		if (prefs.showMetaData) {
+			val descResId = format.toFormatDescriptionResId()
+			if (descResId != 0) {
+				formatDescriptionView.setText(descResId)
+			} else {
+				formatDescriptionView.visibility = View.GONE
+			}
 			metaView.fillMetaView(scan)
 		} else {
+			formatDescriptionView.visibility = View.GONE
 			metaView.visibility = View.GONE
 		}
 
@@ -254,7 +270,7 @@ class DecodeActivity : AbstractBaseActivity() {
 	}
 
 	private fun updateViews(text: String, bytes: ByteArray) {
-		dataView.fillDataView(text, bytes)
+		dataView.fillDataView(text, bytes, text != scan.text)
 		stampView.setTrackingLink(bytes, format)
 		formatView.text = resources.getQuantityString(
 			R.plurals.barcode_info,
@@ -315,93 +331,100 @@ class DecodeActivity : AbstractBaseActivity() {
 		}
 	}
 
-	private fun TableLayout.fillDataView(text: String, bytes: ByteArray) {
-		val items = LinkedHashMap<Any, CharSequence?>()
+	private fun LinearLayout.fillDataView(
+		text: String,
+		bytes: ByteArray,
+		isEditing: Boolean
+	) {
+		val items = mutableListOf<Field>()
 		when (prefs.showChecksum) {
-			"CRC4" -> items[R.string.crc4] = String.format("%X", crc4(bytes))
-			"MD5" -> items[R.string.md5] = bytes.md5().toHexString().fold()
-			"SHA1" -> items[R.string.sha1] = bytes.sha1().toHexString().fold()
-			"SHA256" -> items[R.string.sha256] =
-				bytes.sha256().toHexString().fold()
-
-			else -> Unit
+			"CRC4" -> items.add(Field(R.string.crc4, String.format("%X", crc4(bytes))))
+			"MD5" -> items.add(Field(R.string.md5, bytes.md5().toHexString().fold()))
+			"SHA1" -> items.add(Field(R.string.sha1, bytes.sha1().toHexString().fold()))
+			"SHA256" -> items.add(Field(R.string.sha256, bytes.sha256().toHexString().fold()))
 		}
+		val count = items.count()
+		parseData(items, text, bytes)
+		if (items.count() > count) {
+			lastParsedDataItems = items
+			fillDataItems(items, false)
+			return
+		}
+		if (isEditing && lastParsedDataItems.isNotEmpty()) {
+			if (!showingDimmed) {
+				fillDataItems(lastParsedDataItems, true)
+			}
+			return
+		}
+		fillDataItems(items, false)
+	}
+
+	private fun parseData(
+		items: MutableList<Field>,
+		text: String,
+		bytes: ByteArray
+	) {
+		val ctx = this
 		IdlParser.parse(String(bytes))?.let {
-			items.putAll(mapOf("IIN" to it.iin))
-			items.putAll(
-				it.elements.entries.associate { (id, value) ->
-					context.idlToRes(id) to value
-				}
-			)
+			items.add(Field("IIN", it.iin))
+			it.elements.forEach { (id, value) ->
+				items.add(Field(ctx.idlToRes(id), value))
+			}
+		}
+		SealParser.parse(ctx, bytes)?.forEach { vf ->
+			items.add(Field(vf.name, vf.value))
 		}
 		EpcQrParser.parse(text)?.let {
-			items.putAll(it.elements.mapKeys { (id, _) -> context.epcQrToRes(id) })
+			items.addAll(it.map { (id, value) ->
+				Field(ctx.epcQrToRes(id), value)
+			})
 		}
 		when (action) {
-			is MatMsgAction -> items.putAll(
-				MatMsg(text).run {
-					mapOf(
-						R.string.email_to to to,
-						R.string.email_subject to sub,
-						R.string.email_body to body
-					)
-				}
-			)
+			is MatMsgAction -> MatMsg(text).run {
+				items.add(Field(R.string.email_to, to))
+				items.add(Field(R.string.email_subject, sub))
+				items.add(Field(R.string.email_body, body))
+			}
 
 			is VCardAction,
-			is VEventAction -> VTypeParser.parseMap(text).let { vData ->
-				items.putAll(
-					vData.map { item ->
-						item.key to item.value.joinToString("\n") {
-							it.value
-						}
-					}.toMap()
-				)
+			is VEventAction -> VTypeParser.parseMap(text).forEach { item ->
+				items.add(Field(item.key, item.value.joinToString("\n") { it.value }))
 			}
 
 			is WebAction -> try {
-				items.putAll(
-					text.toUri().run {
-						mapOf(
-							R.string.scheme to scheme,
-							R.string.host to host,
-							R.string.query to query
-						)
-					}
-				)
+				text.toUri().run {
+					items.add(Field(R.string.scheme, scheme))
+					items.add(Field(R.string.host, host))
+					items.add(Field(R.string.query, query))
+				}
 			} catch (_: Exception) {
 				// Ignore
 			}
 
 			is WifiAction -> WifiConnector.parseMap(text)?.let { wifiData ->
-				items.putAll(
-					linkedMapOf(
-						R.string.entry_type to getString(R.string.wifi_network),
-						R.string.wifi_ssid to wifiData["S"],
-						R.string.wifi_password to wifiData["P"],
-						R.string.wifi_type to wifiData["T"],
-						R.string.wifi_hidden to wifiData["H"],
-						R.string.wifi_eap to wifiData["E"],
-						R.string.wifi_identity to wifiData["I"],
-						R.string.wifi_anonymous_identity to wifiData["A"],
-						R.string.wifi_phase2 to wifiData["PH2"]
-					)
-				)
+				items.add(Field(R.string.entry_type, getString(R.string.wifi_network)))
+				items.add(Field(R.string.wifi_ssid, wifiData["S"]))
+				items.add(Field(R.string.wifi_password, wifiData["P"]))
+				items.add(Field(R.string.wifi_type, wifiData["T"]))
+				items.add(Field(R.string.wifi_hidden, wifiData["H"]))
+				items.add(Field(R.string.wifi_eap, wifiData["E"]))
+				items.add(Field(R.string.wifi_identity, wifiData["I"]))
+				items.add(Field(R.string.wifi_anonymous_identity, wifiData["A"]))
+				items.add(Field(R.string.wifi_phase2, wifiData["PH2"]))
 			}
 		}
-		fill(items)
 	}
 
 	private fun TableLayout.fillMetaView(scan: Scan) {
-		val items = linkedMapOf<Any, CharSequence?>(
-			R.string.error_correction_level to scan.errorCorrectionLevel,
-			R.string.sequence_size to scan.sequenceSize.positiveToString(),
-			R.string.sequence_index to scan.sequenceIndex.positiveToString(),
-			R.string.sequence_id to scan.sequenceId,
-			R.string.gtin_country to scan.country,
-			R.string.gtin_add_on to scan.addOn,
-			R.string.gtin_price to scan.price,
-			R.string.gtin_issue_number to scan.issueNumber,
+		val items = mutableListOf(
+			Field(R.string.error_correction_level, scan.errorCorrectionLevel),
+			Field(R.string.sequence_size, scan.sequenceSize.positiveToString()),
+			Field(R.string.sequence_index, scan.sequenceIndex.positiveToString()),
+			Field(R.string.sequence_id, scan.sequenceId),
+			Field(R.string.gtin_country, scan.country),
+			Field(R.string.gtin_add_on, scan.addOn),
+			Field(R.string.gtin_price, scan.price),
+			Field(R.string.gtin_issue_number, scan.issueNumber),
 		)
 		if (!scan.version.isNullOrBlank()) {
 			val versionString = if (scan.format == ZxingCpp.BarcodeFormat.QRCode) {
@@ -413,27 +436,17 @@ class DecodeActivity : AbstractBaseActivity() {
 			} else {
 				scan.version
 			}
-			items.putAll(
-				linkedMapOf(
-					R.string.barcode_version_number to versionString
-				)
-			)
+			items.add(Field(R.string.barcode_version_number, versionString))
 		}
 		if (scan.format == ZxingCpp.BarcodeFormat.QRCode &&
 			scan.dataMask > -1
 		) {
-			items.putAll(
-				linkedMapOf(
-					R.string.qr_data_mask to scan.dataMask.toString()
-				)
-			)
+			items.add(Field(R.string.qr_data_mask, scan.dataMask.toString()))
 		}
-		fill(items)
+		fillTable(items)
 	}
 
-	private fun TableLayout.fill(
-		items: LinkedHashMap<Any, CharSequence?>
-	) {
+	private fun TableLayout.fillTable(items: List<Field>) {
 		removeAllViews()
 		visibility = if (items.isEmpty()) View.GONE else {
 			val ctx = context
@@ -442,11 +455,12 @@ class DecodeActivity : AbstractBaseActivity() {
 				val text = item.value
 				if (!text.isNullOrBlank()) {
 					val tr = TableRow(ctx)
-					val keyView = TextView(ctx)
-					when (val key = item.key) {
-						is Int -> keyView.setText(key)
-						is String -> keyView.text = key
-						else -> keyView.text = key.toString()
+					val keyView = TextView(ctx).apply {
+						when (val key = item.key) {
+							is Int -> setText(key)
+							is String -> this.text = key
+							else -> this.text = key.toString()
+						}
 					}
 					val valueView = TextView(ctx).apply {
 						setPadding(spaceBetween, 0, 0, 0)
@@ -462,6 +476,76 @@ class DecodeActivity : AbstractBaseActivity() {
 			}
 			View.VISIBLE
 		}
+	}
+
+	private fun LinearLayout.fillDataItems(
+		items: List<Field>,
+		dimmed: Boolean
+	) {
+		showingDimmed = dimmed
+		removeAllViews()
+		if (items.isEmpty()) {
+			visibility = View.GONE
+			return
+		}
+		val ctx = context
+		val spaceBetween = (16f * dp).roundToInt()
+		for (item in items) {
+			val text = item.value
+			if (text.isNullOrBlank()) {
+				continue
+			}
+			val rowView = LinearLayout(ctx).apply {
+				orientation = LinearLayout.VERTICAL
+				layoutParams = LinearLayout.LayoutParams(
+					LinearLayout.LayoutParams.MATCH_PARENT,
+					LinearLayout.LayoutParams.WRAP_CONTENT
+				).apply {
+					bottomMargin = spaceBetween
+				}
+			}
+			val keyView = TextView(ctx).apply {
+				TextViewCompat.setTextAppearance(
+					this,
+					R.style.SecondaryText
+				)
+				when (val key = item.key) {
+					is Int -> setText(key)
+					is String -> this.text = key
+					else -> this.text = key.toString()
+				}
+			}
+			val valueView = TextView(ctx).apply {
+				TextViewCompat.setTextAppearance(
+					this,
+					android.R.style.TextAppearance_Medium
+				)
+				setTextColor(
+					ColorStateList.valueOf(
+						ctx.obtainStyledAttributes(
+							intArrayOf(android.R.attr.textColorPrimary)
+						).run {
+							try {
+								getColor(0, currentTextColor)
+							} finally {
+								recycle()
+							}
+						}
+					)
+				)
+				this.text = text
+				setOnClickListener {
+					copyToClipboard(text.toString())
+				}
+			}
+			val alpha = if (dimmed) 0.5f else 1f
+			keyView.alpha = alpha
+			valueView.alpha = alpha
+			rowView.addView(keyView)
+			rowView.addView(valueView)
+			addView(rowView)
+		}
+		visibility = View.VISIBLE
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -667,6 +751,8 @@ class DecodeActivity : AbstractBaseActivity() {
 		}
 	}
 }
+
+private data class Field(val key: Any, val value: CharSequence?)
 
 private inline fun <T : View> T.showIf(
 	visible: Boolean,

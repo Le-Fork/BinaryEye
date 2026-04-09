@@ -21,6 +21,7 @@ import de.markusfisch.android.binaryeye.activity.IgnoreCodesActivity
 import de.markusfisch.android.binaryeye.activity.NetworkSuggestionsActivity
 import de.markusfisch.android.binaryeye.activity.ProfilesActivity
 import de.markusfisch.android.binaryeye.activity.SplashActivity
+import de.markusfisch.android.binaryeye.adapter.prettifyFormatName
 import de.markusfisch.android.binaryeye.app.hasBluetoothPermission
 import de.markusfisch.android.binaryeye.app.prefs
 import de.markusfisch.android.binaryeye.bluetooth.setBluetoothHosts
@@ -238,33 +239,36 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 	}
 
 	private fun setSummary(preference: Preference) {
-		if (preference.key == AUTOMATED_ACTIONS) {
-			updateAutomatedActionsSummary(preference)
-			return
-		}
-		if (preference.key == IGNORE_CODES) {
-			updateIgnoreCodesSummary(preference)
-			return
+		when (preference.key) {
+			AUTOMATED_ACTIONS -> return updateAutomatedActionsSummary(preference)
+			IGNORE_CODES -> return updateIgnoreCodesSummary(preference)
 		}
 		when (preference) {
-			is UrlPreference -> {
-				preference.summary = preference.getUrl()
-			}
+			is UrlPreference -> preference.summary = preference.getUrl()
+			is ListPreference -> preference.setSummary(preference.entry)
+			is MultiSelectListPreference -> preference.summary =
+				getSortedSummary(preference)
 
-			is ListPreference -> {
-				preference.setSummary(preference.entry)
-			}
-
-			is MultiSelectListPreference -> {
-				preference.summary = preference.values.joinToString(", ") {
-					it.replace(Regex("_"), " ")
-				}
-			}
-
-			is PreferenceGroup -> {
-				setSummaries(preference)
-			}
+			is PreferenceGroup -> setSummaries(preference)
 		}
+	}
+
+	private fun getSortedSummary(preference: MultiSelectListPreference): String {
+		val labelsByValue = mutableMapOf<String, String>()
+		val entries = preference.entries
+		val entryValues = preference.entryValues
+		val count = minOf(entries.size, entryValues.size)
+
+		for (i in 0 until count) {
+			labelsByValue[entryValues[i].toString()] = entries[i].toString()
+		}
+
+		return preference.values
+			.map { value ->
+				labelsByValue[value] ?: value.prettifyFormatName()
+			}
+			.sortedBy { it.lowercase() }
+			.joinToString(", ")
 	}
 
 	private fun setIcons() {
