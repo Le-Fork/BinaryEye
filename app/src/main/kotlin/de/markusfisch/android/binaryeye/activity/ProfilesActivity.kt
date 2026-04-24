@@ -14,6 +14,7 @@ import de.markusfisch.android.binaryeye.app.prefs
 import de.markusfisch.android.binaryeye.view.setPaddingFromWindowInsets
 import de.markusfisch.android.binaryeye.view.systemBarListViewScrollListener
 import de.markusfisch.android.binaryeye.widget.toast
+import de.markusfisch.android.zxingcpp.ZxingCpp.BarcodeFormat
 
 class ProfilesActivity : AbstractBaseActivity() {
 	private val profiles = ArrayList<ProfileItem>()
@@ -53,11 +54,11 @@ class ProfilesActivity : AbstractBaseActivity() {
 		profiles.add(
 			ProfileItem(
 				null,
-				getString(R.string.profile_default)
+				prefs.profileLabel(this, null)
 			)
 		)
 		prefs.profiles.forEach { name ->
-			profiles.add(ProfileItem(name, name))
+			profiles.add(ProfileItem(name, prefs.profileLabel(this, name)))
 		}
 		if (this::adapter.isInitialized) {
 			adapter.notifyDataSetChanged()
@@ -116,8 +117,8 @@ class ProfilesActivity : AbstractBaseActivity() {
 		private val items: List<ProfileItem>
 	) : ArrayAdapter<ProfileItem>(
 		context,
-		android.R.layout.simple_list_item_2,
-		android.R.id.text1,
+		R.layout.row_profile,
+		R.id.title,
 		items
 	) {
 		override fun getView(
@@ -129,6 +130,7 @@ class ProfilesActivity : AbstractBaseActivity() {
 			val item = items[position]
 			val isCurrent = item.name == prefs.profile
 			getViewHolder(view).apply {
+				current = item
 				title.text = item.label
 				if (isCurrent) {
 					subtitle.text = context.getString(R.string.profile_current)
@@ -144,16 +146,31 @@ class ProfilesActivity : AbstractBaseActivity() {
 		private fun getViewHolder(
 			view: View
 		): ViewHolder = view.tag as ViewHolder? ?: ViewHolder(
-			view.findViewById(android.R.id.text1),
-			view.findViewById(android.R.id.text2),
-		).also {
-			view.tag = it
+			view.findViewById(R.id.title),
+			view.findViewById(R.id.subtitle),
+			view.findViewById(R.id.share_qr),
+		).also { holder ->
+			holder.shareQr.setOnClickListener {
+				val item = holder.current ?: return@setOnClickListener
+				context.startActivity(
+					BarcodeActivity.newIntent(
+						context,
+						prefs.toJson(context, item.name),
+						BarcodeFormat.QRCode,
+						addQuietZone = true
+					)
+				)
+			}
+			view.tag = holder
 		}
 
-		private data class ViewHolder(
+		private class ViewHolder(
 			val title: TextView,
 			val subtitle: TextView,
-		)
+			val shareQr: View,
+		) {
+			var current: ProfileItem? = null
+		}
 	}
 }
 
