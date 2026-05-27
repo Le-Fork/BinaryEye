@@ -142,6 +142,8 @@
 	<string name="ignore_code_remove_confirm">Remove this ignored code?</string>
 	<string name="open_immediately">Hemen aç</string>
 	<string name="open_immediately_summary">İncelemeyi atla ve içeriği hemen aç. Eğer etkinse zararlı içerik açılabilir.</string>
+	<string name="strip_tracking_params">Takip parametrelerini kaldır</string>
+	<string name="strip_tracking_params_summary">Açmadan önce URL\'lerden bilinen takip parametrelerini (utm_*, fbclid, …) kaldırır.</string>
 	<string name="copy_immediately">Panoya koy</string>
 	<string name="copy_immediately_summary">Taranan içerikleri kendiliğinden panoya kopyala. Unutmayın ki, diğer uygulamalar arka planda panonuzu gözetleyebilir.</string>
 	<string name="show_meta_data">Üst veriyi göster</string>
@@ -415,4 +417,7 @@
 	<string name="parsed_type_calendar_event">Takvim etkinliği</string>
 	<string name="parsed_type_wifi_network">Wi-Fi ağı</string>
 	<string name="formatted_json">Biçimlendirilmiş JSON</string>
+	<string name="appearance_category">Görünüm</string>
+	<string name="dynamic_colors">Dinamik renkler</string>
+	<string name="dynamic_colors_summary">Uygulama teması için sistem renklerini kullan. Android 12 veya daha yeni gerektirir.</string>
 </resources>

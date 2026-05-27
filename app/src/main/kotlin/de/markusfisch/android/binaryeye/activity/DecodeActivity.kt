@@ -1,7 +1,6 @@
 package de.markusfisch.android.binaryeye.activity
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
@@ -29,13 +28,14 @@ import android.widget.TableRow
 import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.core.widget.TextViewCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import de.markusfisch.android.binaryeye.R
 import de.markusfisch.android.binaryeye.actions.ActionRegistry
 import de.markusfisch.android.binaryeye.actions.mail.MatMsg
 import de.markusfisch.android.binaryeye.actions.mail.MatMsgAction
-import de.markusfisch.android.binaryeye.actions.vtype.VTypeParser
 import de.markusfisch.android.binaryeye.actions.otpauth.OtpauthAction
+import de.markusfisch.android.binaryeye.actions.vtype.VTypeParser
 import de.markusfisch.android.binaryeye.actions.vtype.vcard.VCardAction
 import de.markusfisch.android.binaryeye.actions.vtype.vevent.VEventAction
 import de.markusfisch.android.binaryeye.actions.web.WebAction
@@ -222,7 +222,7 @@ class DecodeActivity : AbstractBaseActivity() {
 				label = newLabel
 			}
 		}
-		if (action.fired) {
+		if (action.executed) {
 			maybeBackOrFinish()
 		}
 	}
@@ -730,7 +730,7 @@ class DecodeActivity : AbstractBaseActivity() {
 	}
 
 	private fun askToRemoveScan(id: Long) {
-		AlertDialog.Builder(this)
+		MaterialAlertDialogBuilder(this)
 			.setMessage(R.string.really_remove_scan)
 			.setPositiveButton(android.R.string.ok) { _, _ ->
 				db.removeScan(id)

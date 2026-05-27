@@ -141,6 +141,8 @@
 	<string name="ignore_code_remove_confirm">Remove this ignored code?</string>
 	<string name="open_immediately">不检查内容立即打开链接</string>
 	<string name="open_immediately_summary">跳过检查并立即打开内容。如果启用，可能会打开有害内容。</string>
+	<string name="strip_tracking_params">去除追踪参数</string>
+	<string name="strip_tracking_params_summary">打开前从URL中移除已知的追踪参数（utm_*、fbclid……）。</string>
 	<string name="copy_immediately">自动复制扫描结果到剪贴板</string>
 	<string name="copy_immediately_summary">注意其他 APP 可能会在后台监控剪贴板。</string>
 	<string name="show_meta_data">显示元数据</string>
@@ -413,4 +415,7 @@
 	<string name="parsed_type_calendar_event">日历事件</string>
 	<string name="parsed_type_wifi_network">Wi-Fi 网络</string>
 	<string name="formatted_json">格式化的 JSON</string>
+	<string name="appearance_category">外观</string>
+	<string name="dynamic_colors">动态颜色</string>
+	<string name="dynamic_colors_summary">使用系统颜色作为应用主题。需要 Android 12 或更高版本。</string>
 </resources>

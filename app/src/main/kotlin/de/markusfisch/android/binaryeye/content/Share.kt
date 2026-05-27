@@ -9,12 +9,13 @@ import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import de.markusfisch.android.binaryeye.BuildConfig
 import de.markusfisch.android.binaryeye.R
+import de.markusfisch.android.binaryeye.app.prefs
 import de.markusfisch.android.binaryeye.widget.toast
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
-fun Context.execShareIntent(intent: Intent): Boolean = if (
+fun Context.startIntentOrToast(intent: Intent): Boolean = if (
 	!startIntent(intent)
 ) {
 	toast(R.string.cannot_resolve_action)
@@ -43,24 +44,27 @@ fun Context.openUrl(url: String, silent: Boolean = false): Boolean {
 }
 
 fun Context.openUri(uri: Uri, silent: Boolean = false): Boolean {
-	val intent = Intent(Intent.ACTION_VIEW, uri).apply {
-		if (uri.scheme == "content") {
+	val cleaned = if (prefs.stripTrackingParams) {
+		uri.stripTrackingParams()
+	} else {
+		uri
+	}
+	val intent = Intent(Intent.ACTION_VIEW, cleaned).apply {
+		if (cleaned.scheme == "content") {
 			addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 		}
 	}
 	return if (silent) {
 		startIntent(intent)
 	} else {
-		execShareIntent(intent)
+		startIntentOrToast(intent)
 	}
 }
 
-fun String.parseAndNormalizeUri(): Uri = toUri().let {
-	it.normalizeScheme()
-}
+fun String.parseAndNormalizeUri(): Uri = toUri().normalizeScheme()
 
 fun Context.shareText(text: String, mimeType: String = "text/plain") {
-	execShareIntent(Intent(Intent.ACTION_SEND).apply {
+	startIntentOrToast(Intent(Intent.ACTION_SEND).apply {
 		putExtra(Intent.EXTRA_TEXT, text)
 		type = mimeType
 	})
@@ -123,7 +127,7 @@ private fun Context.getUriForFile(file: File): Uri? = if (
 }
 
 private fun Context.shareUri(uri: Uri, mimeType: String) {
-	execShareIntent(Intent(Intent.ACTION_SEND).apply {
+	startIntentOrToast(Intent(Intent.ACTION_SEND).apply {
 		putExtra(Intent.EXTRA_STREAM, uri)
 		addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 		type = mimeType

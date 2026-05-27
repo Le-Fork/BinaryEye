@@ -133,6 +133,11 @@
 			android:summary="@string/open_immediately_summary"/>
 		<androidx.preference.SwitchPreferenceCompat
 			android:defaultValue="true"
+			android:key="strip_tracking_params"
+			android:title="@string/strip_tracking_params"
+			android:summary="@string/strip_tracking_params_summary"/>
+		<androidx.preference.SwitchPreferenceCompat
+			android:defaultValue="true"
 			android:key="show_meta_data"
 			android:title="@string/show_meta_data"
 			android:summary="@string/show_meta_data_summary"/>
@@ -189,5 +194,14 @@
 			android:entries="@array/locale_names"
 			android:entryValues="@array/locale_values"
 			android:defaultValue="0"/>
+	</PreferenceCategory>
+	<PreferenceCategory
+		android:key="appearance_category"
+		android:title="@string/appearance_category">
+		<androidx.preference.SwitchPreferenceCompat
+			android:defaultValue="true"
+			android:key="dynamic_colors"
+			android:title="@string/dynamic_colors"
+			android:summary="@string/dynamic_colors_summary"/>
 	</PreferenceCategory>
 </PreferenceScreen>

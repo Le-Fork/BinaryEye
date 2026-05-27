@@ -2,15 +2,15 @@ package de.markusfisch.android.binaryeye.actions
 
 import android.content.Context
 import android.content.Intent
-import de.markusfisch.android.binaryeye.content.execShareIntent
 import de.markusfisch.android.binaryeye.content.openUrl
+import de.markusfisch.android.binaryeye.content.startIntentOrToast
 import de.markusfisch.android.binaryeye.widget.toast
 
 abstract class Action {
 	abstract val iconResId: Int
 	abstract val titleResId: Int
 
-	var fired: Boolean = false
+	var executed: Boolean = false
 
 	abstract fun canExecuteOn(data: ByteArray): Boolean
 	abstract suspend fun execute(context: Context, data: ByteArray)
@@ -24,7 +24,7 @@ abstract class IntentAction : Action() {
 		if (intent == null) {
 			context.toast(errorMsg)
 		} else {
-			fired = context.execShareIntent(intent)
+			executed = context.startIntentOrToast(intent)
 		}
 	}
 
@@ -52,6 +52,6 @@ abstract class SchemeAction : Action() {
 	}
 
 	final override suspend fun execute(context: Context, data: ByteArray) {
-		fired = context.openUrl(String(data))
+		executed = context.openUrl(String(data))
 	}
 }

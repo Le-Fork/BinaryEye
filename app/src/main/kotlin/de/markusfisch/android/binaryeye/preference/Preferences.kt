@@ -148,6 +148,11 @@ class Preferences {
 			apply(OPEN_IMMEDIATELY, value)
 			field = value
 		}
+	var stripTrackingParams = true
+		set(value) {
+			apply(STRIP_TRACKING_PARAMS, value)
+			field = value
+		}
 	var showMetaData = true
 		set(value) {
 			apply(SHOW_META_DATA, value)
@@ -248,6 +253,11 @@ class Preferences {
 	var previewScale = 0f
 		set(value) {
 			apply(PREVIEW_SCALE, value)
+			field = value
+		}
+	var dynamicColors = true
+		set(value) {
+			apply(DYNAMIC_COLORS, value)
 			field = value
 		}
 	var automatedActions = mutableListOf<AutomatedAction>()
@@ -360,6 +370,7 @@ class Preferences {
 		json.put(IGNORE_CODES, p, ignoreCodesToJsonArray(defaults.ignoreCodes))
 		json.put(COPY_IMMEDIATELY, p, defaults.copyImmediately)
 		json.put(OPEN_IMMEDIATELY, p, defaults.openImmediately)
+		json.put(STRIP_TRACKING_PARAMS, p, defaults.stripTrackingParams)
 		json.put(SHOW_META_DATA, p, defaults.showMetaData)
 		json.put(SHOW_HEX_DUMP, p, defaults.showHexDump)
 		json.put(SHOW_CHECKSUM, p, defaults.showChecksum)
@@ -456,6 +467,7 @@ class Preferences {
 				putString(IGNORE_CODES, json)
 				putBoolean(COPY_IMMEDIATELY, json)
 				putBoolean(OPEN_IMMEDIATELY, json)
+				putBoolean(STRIP_TRACKING_PARAMS, json)
 				putBoolean(SHOW_META_DATA, json)
 				putBoolean(SHOW_HEX_DUMP, json)
 				putString(SHOW_CHECKSUM, json)
@@ -570,6 +582,10 @@ class Preferences {
 			OPEN_IMMEDIATELY,
 			openImmediately
 		)
+		stripTrackingParams = preferences.getBoolean(
+			STRIP_TRACKING_PARAMS,
+			stripTrackingParams
+		)
 		showMetaData = preferences.getBoolean(SHOW_META_DATA, showMetaData)
 		showHexDump = preferences.getBoolean(SHOW_HEX_DUMP, showHexDump)
 		preferences.getString(SHOW_CHECKSUM, showChecksum)?.also {
@@ -631,6 +647,7 @@ class Preferences {
 			PREVIEW_SCALE,
 			previewScale
 		)
+		dynamicColors = preferences.getBoolean(DYNAMIC_COLORS, dynamicColors)
 		automatedActions = fromJsonArray(
 			preferences.getString(AUTOMATED_ACTIONS, null) ?: "[]"
 		)
@@ -761,6 +778,7 @@ class Preferences {
 		putString(IGNORE_CODES, ignoreCodesToJsonArray(defaults.ignoreCodes))
 		putBoolean(COPY_IMMEDIATELY, defaults.copyImmediately)
 		putBoolean(OPEN_IMMEDIATELY, defaults.openImmediately)
+		putBoolean(STRIP_TRACKING_PARAMS, defaults.stripTrackingParams)
 		putBoolean(SHOW_META_DATA, defaults.showMetaData)
 		putBoolean(SHOW_HEX_DUMP, defaults.showHexDump)
 		putString(SHOW_CHECKSUM, defaults.showChecksum)
@@ -864,6 +882,7 @@ class Preferences {
 		private const val IGNORE_DUPLICATES_NAME = "ignore_duplicates_name"
 		private const val IGNORE_CODES = "ignore_codes"
 		private const val OPEN_IMMEDIATELY = "open_immediately"
+		private const val STRIP_TRACKING_PARAMS = "strip_tracking_params"
 		private const val COPY_IMMEDIATELY = "copy_immediately"
 		private const val SHOW_META_DATA = "show_meta_data"
 		private const val SHOW_HEX_DUMP = "show_hex_dump"
@@ -886,6 +905,7 @@ class Preferences {
 		private const val BRIGHTEN_SCREEN = "brighten_screen"
 		private const val PREVIEW_SCALE = "preview_scale"
 		private const val AUTOMATED_ACTIONS = "automated_actions"
+		private const val DYNAMIC_COLORS = "dynamic_colors"
 		private const val DEFAULT_IGNORE_CODE_PATTERN = "^FIDO://.*"
 	}
 }

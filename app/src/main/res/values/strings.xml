@@ -150,6 +150,8 @@
 	<string name="ignore_code_remove_confirm">Remove this ignored code?</string>
 	<string name="open_immediately">Open immediately</string>
 	<string name="open_immediately_summary">Skip inspection and open contents immediately. May open harmful content if enabled.</string>
+	<string name="strip_tracking_params">Strip tracking parameters</string>
+	<string name="strip_tracking_params_summary">Remove known tracking parameters (utm_*, fbclid, …) from URLs before opening.</string>
 	<string name="copy_immediately">Put into clipboard</string>
 	<string name="copy_immediately_summary">Automatically copy scanned contents into clipboard. Please note that other apps may snoop on your clipboard in the background.</string>
 	<string name="show_meta_data">Show metadata</string>
@@ -414,4 +416,7 @@
 	<string name="vds_issuing_country">Issuing Country</string>
 	<string name="vds_signing_date">Signing Date</string>
 	<string name="formatted_json">Formatted JSON</string>
+	<string name="appearance_category">Appearance</string>
+	<string name="dynamic_colors">Dynamic colors</string>
+	<string name="dynamic_colors_summary">Use system colors for the app theme. Requires Android 12 or later.</string>
 </resources>

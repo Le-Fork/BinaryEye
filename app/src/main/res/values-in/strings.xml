@@ -141,6 +141,8 @@
 	<string name="ignore_code_remove_confirm">Remove this ignored code?</string>
 	<string name="open_immediately">Buka segera</string>
 	<string name="open_immediately_summary">Lewati inspeksi dan segera buka konten. Mungkin membuka konten berbahaya jika diaktifkan.</string>
+	<string name="strip_tracking_params">Hapus parameter pelacakan</string>
+	<string name="strip_tracking_params_summary">Menghapus parameter pelacakan yang dikenal (utm_*, fbclid, …) dari URL sebelum dibuka.</string>
 	<string name="copy_immediately">Simpan ke dalam clipboard</string>
 	<string name="copy_immediately_summary">Otomatis menyalin konten yang dipindai ke dalam clipboard. Harap diingat bahwa apl lain bisa melihat isi dari clipboard anda di latar belakang.</string>
 	<string name="show_meta_data">Tampilkan metadata</string>
@@ -413,4 +415,7 @@
 	<string name="parsed_type_calendar_event">Acara kalender</string>
 	<string name="parsed_type_wifi_network">Jaringan Wi-Fi</string>
 	<string name="formatted_json">JSON terformat</string>
+	<string name="appearance_category">Tampilan</string>
+	<string name="dynamic_colors">Warna dinamis</string>
+	<string name="dynamic_colors_summary">Gunakan warna sistem untuk tema aplikasi. Memerlukan Android 12 atau lebih tinggi.</string>
 </resources>

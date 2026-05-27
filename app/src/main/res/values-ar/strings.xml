@@ -150,6 +150,8 @@
 	<string name="ignore_code_remove_confirm">Remove this ignored code?</string>
 	<string name="open_immediately">فتح مباشرةً</string>
 	<string name="open_immediately_summary">تخطي الفحص وفتح المحتويات على الفور. قد يتم فتح محتويات ضارة إذا تم تمكينه.</string>
+	<string name="strip_tracking_params">إزالة معاملات التتبع</string>
+	<string name="strip_tracking_params_summary">إزالة معاملات التتبع المعروفة (utm_*، fbclid، …) من عناوين URL قبل فتحها.</string>
 	<string name="copy_immediately">نسخ تلقائي إلى الحافظة</string>
 	<string name="copy_immediately_summary">نسخ المحتويات الممسوحة إلى الحافظة تلقائيًا. يرجى ملاحظة أن التطبيقات الأخرى قد تتطفل على الحافظة الخاصة بك في الخلفية.</string>
 	<string name="show_meta_data">عرض البيانات الوصفية</string>
@@ -431,4 +433,7 @@
 	<string name="parsed_type_calendar_event">حدث تقويمي</string>
 	<string name="parsed_type_wifi_network">شبكة واي فاي</string>
 	<string name="formatted_json">JSON منسق</string>
+	<string name="appearance_category">المظهر</string>
+	<string name="dynamic_colors">الألوان الديناميكية</string>
+	<string name="dynamic_colors_summary">استخدام ألوان النظام لسمة التطبيق. يتطلب Android 12 أو أحدث.</string>
 </resources>

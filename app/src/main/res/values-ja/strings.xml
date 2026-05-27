@@ -141,6 +141,8 @@
 	<string name="ignore_code_remove_confirm">Remove this ignored code?</string>
 	<string name="open_immediately">すぐにコンテンツを開く</string>
 	<string name="open_immediately_summary">確認画面なしでコンテンツをすぐに開くようにします。有害なコンテンツを開いてしまうリスクがあります。</string>
+	<string name="strip_tracking_params">トラッキングパラメータを除去</string>
+	<string name="strip_tracking_params_summary">URLを開く前に既知のトラッキングパラメータ（utm_*、fbclid、…）を除去します。</string>
 	<string name="copy_immediately">自動的にクリップボードにコピー</string>
 	<string name="copy_immediately_summary">スキャンされたコンテンツを自動的にクリップボードにコピーします。他のアプリはクリップボードの内容を見ることができることにご注意ください。</string>
 	<string name="show_meta_data">メタデータを表示</string>
@@ -413,4 +415,7 @@
 	<string name="parsed_type_calendar_event">カレンダーイベント</string>
 	<string name="parsed_type_wifi_network">Wi-Fi ネットワーク</string>
 	<string name="formatted_json">整形済み JSON</string>
+	<string name="appearance_category">外観</string>
+	<string name="dynamic_colors">ダイナミックカラー</string>
+	<string name="dynamic_colors_summary">アプリのテーマにシステムカラーを使用します。Android 12以降が必要です。</string>
 </resources>

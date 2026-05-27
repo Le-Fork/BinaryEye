@@ -143,6 +143,8 @@
 	<string name="tone_prop_beep2">Ogólny podwójny sygnał dźwiękowy</string>
 	<string name="open_immediately">Pomiń kontrolę i natychmiast otwórz zawartość</string>
 	<string name="open_immediately_summary">Pomiń kontrolę i natychmiast otwórz zawartość. Może otwierać szkodliwą zawartość, jeśli jest włączona.</string>
+	<string name="strip_tracking_params">Usuń parametry śledzenia</string>
+	<string name="strip_tracking_params_summary">Usuwa znane parametry śledzenia (utm_*, fbclid, …) z adresów URL przed otwarciem.</string>
 	<string name="copy_immediately">Automatycznie skopiuj zawartość do schowka</string>
 	<string name="copy_immediately_summary">Automatycznie skopiuj zeskanowaną zawartość do schowka. Pamiętaj, że inne aplikacje mogą szpiegować Twój schowek w tle.</string>
 	<string name="show_crop_handle">Pokazuj ogranicznik przycinania</string>
@@ -423,4 +425,7 @@
 	<string name="parsed_type_calendar_event">Wydarzenie kalendarza</string>
 	<string name="parsed_type_wifi_network">Sieć Wi-Fi</string>
 	<string name="formatted_json">Sformatowany JSON</string>
+	<string name="appearance_category">Wygląd</string>
+	<string name="dynamic_colors">Dynamiczne kolory</string>
+	<string name="dynamic_colors_summary">Używaj kolorów systemu dla motywu aplikacji. Wymaga systemu Android 12 lub nowszego.</string>
 </resources>
