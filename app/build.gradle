@@ -8,8 +8,8 @@ android {
 		minSdk 21
 		targetSdk sdk_version
 
-		versionCode 169
-		versionName '1.73.0'
+		versionCode 170
+		versionName '1.73.1'
 	}
 
 	signingConfigs {
@@ -73,7 +73,7 @@ dependencies {
 
 	// Support
 	implementation "androidx.appcompat:appcompat:1.7.1"
-	implementation "com.google.android.material:material:1.13.0"
+	implementation "com.google.android.material:material:1.13.0" // Keep for minSDK 21.
 	implementation "androidx.preference:preference:1.2.1"
 
 	// External
@@ -83,8 +83,8 @@ dependencies {
 	implementation "androidx.camera:camera-lifecycle:$camerax_version"
 	implementation "androidx.camera:camera-view:$camerax_version"
 	implementation 'com.github.markusfisch:ScalingImageView:1.4.3'
-	implementation 'com.github.markusfisch:zxing-cpp:v3.0.2.5'
-	implementation 'de.tsenger:vdstools:0.16.0'
+	implementation 'com.github.markusfisch:zxing-cpp:v3.0.2.6'
+	implementation 'de.tsenger:vdstools:0.17.0'
 	implementation 'org.bouncycastle:bcpkix-jdk15to18:1.84'
 
 	// Testing
