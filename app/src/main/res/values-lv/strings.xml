@@ -112,6 +112,7 @@
 	<string name="sequence_size">Secības lielums</string>
 	<string name="sequence_index">Secības indekss</string>
 	<string name="sequence_id">Secības ID</string>
+	<string name="tracking_number">Izsekošanas numurs</string>
 	<string name="gtin_issue_number">Izdevuma numurs</string>
 	<string name="gtin_country">Iespējamā ražošanas valsts</string>
 	<string name="qr_data_mask">Datu maska</string>
@@ -287,7 +288,6 @@
 	<string name="otp_digits">Cipari</string>
 	<string name="otp_period">Periods (s)</string>
 	<string name="otp_counter">Skaitītājs</string>
-	<string name="parsed_type_otp">Vienreizējā parole</string>
 	<string name="search_web">Meklēt tīmeklī</string>
 	<string name="search_scan">Meklēt skenējumu</string>
 	<string name="add_to_history">Pievienot vēsturei</string>
@@ -306,6 +306,7 @@
 	<string name="background_request_failed">Fona pieprasījums neizdevās</string>
 	<string name="email_body">Ziņojums</string>
 	<string name="scheme">Shēma</string>
+	<string name="parsed_type_otp">Vienreizējā parole</string>
 	<string name="parsed_type_json">JSON</string>
 	<string name="parsed_type_international_driver_license">Starptautiska vadītāja apliecība</string>
 	<string name="parsed_type_digital_seal">Digitālais zīmogs</string>

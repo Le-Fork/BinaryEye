@@ -37,6 +37,7 @@
 	<string name="sequence_size">Dimensione sequenza</string>
 	<string name="sequence_index">Indice sequenza</string>
 	<string name="sequence_id">ID sequenza</string>
+	<string name="tracking_number">Numero tracciamento</string>
 	<string name="gtin_issue_number">Numero edizione</string>
 	<string name="gtin_country">Probabile nazione fabbricazione</string>
 	<string name="gtin_price">Prezzo consigliato</string>
@@ -259,7 +260,6 @@
 	<string name="otp_digits">Cifre</string>
 	<string name="otp_period">Periodo (s)</string>
 	<string name="otp_counter">Contatore</string>
-	<string name="parsed_type_otp">Password mono uso</string>
 	<string name="search_web">Cerca nel web</string>
 	<string name="search_scan">Cerca scansione</string>
 	<string name="add_to_history">Aggiungi alla cronologia</string>
@@ -301,6 +301,7 @@
 	<string name="scheme">Schema</string>
 	<string name="host">Host</string>
 	<string name="query">Richiesta</string>
+	<string name="parsed_type_otp">Password mono uso</string>
 	<string name="parsed_type_json">JSON</string>
 	<string name="parsed_type_international_driver_license">Patente di guida internazionale</string>
 	<string name="parsed_type_digital_seal">Sigillo digitale</string>

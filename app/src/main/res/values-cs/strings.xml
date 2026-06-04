@@ -31,6 +31,7 @@
 	<string name="sequence_size">Velikost sekvence</string>
 	<string name="sequence_index">Index sekvence</string>
 	<string name="sequence_id">ID sekvence</string>
+	<string name="tracking_number">Sledovací číslo</string>
 	<string name="gtin_issue_number">Číslo edice</string>
 	<string name="gtin_country">Možná země původu</string>
 	<string name="gtin_price">Doporučená cena</string>
@@ -250,7 +251,6 @@
 	<string name="otp_digits">Číslice</string>
 	<string name="otp_period">Perioda (s)</string>
 	<string name="otp_counter">Počítadlo</string>
-	<string name="parsed_type_otp">Jednorázové heslo</string>
 	<string name="search_web">Vyhledat na webu</string>
 	<string name="search_scan">Vyhledat sken</string>
 	<string name="add_to_history">Přidat do historie</string>
@@ -419,6 +419,7 @@
 		<item quantity="many">%d znaků</item>
 		<item quantity="other">%d znaků</item>
 	</plurals>
+	<string name="parsed_type_otp">Jednorázové heslo</string>
 	<string name="parsed_type_json">JSON</string>
 	<string name="parsed_type_international_driver_license">Mezinárodní řidičský průkaz</string>
 	<string name="parsed_type_digital_seal">Digitální pečeť</string>

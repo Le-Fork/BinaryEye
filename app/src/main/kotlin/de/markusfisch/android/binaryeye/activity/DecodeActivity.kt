@@ -10,11 +10,9 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.text.Editable
-import android.text.Html
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextWatcher
-import android.text.method.LinkMovementMethod
 import android.text.style.TypefaceSpan
 import android.view.Menu
 import android.view.MenuInflater
@@ -54,6 +52,7 @@ import de.markusfisch.android.binaryeye.content.SealParser
 import de.markusfisch.android.binaryeye.content.copyToClipboard
 import de.markusfisch.android.binaryeye.content.epcQrToRes
 import de.markusfisch.android.binaryeye.content.idlToRes
+import de.markusfisch.android.binaryeye.content.openUrl
 import de.markusfisch.android.binaryeye.content.shareAsFile
 import de.markusfisch.android.binaryeye.content.shareText
 import de.markusfisch.android.binaryeye.content.toBarcode
@@ -93,7 +92,6 @@ class DecodeActivity : AbstractBaseActivity() {
 	private lateinit var hexView: TextView
 	private lateinit var formatDescriptionView: TextView
 	private lateinit var labelHeadlineView: TextView
-	private lateinit var stampView: TextView
 	private lateinit var recreationView: ImageView
 	private lateinit var labelView: EditText
 	private lateinit var fab: FloatingActionButton
@@ -162,7 +160,6 @@ class DecodeActivity : AbstractBaseActivity() {
 		hexView = findViewById(R.id.hex)
 		formatDescriptionView = findViewById(R.id.format_description)
 		labelHeadlineView = findViewById(R.id.label_headline)
-		stampView = findViewById(R.id.stamp)
 		recreationView = findViewById(R.id.recreation)
 		labelView = findViewById(R.id.label)
 		fab = findViewById(R.id.open)
@@ -301,7 +298,6 @@ class DecodeActivity : AbstractBaseActivity() {
 
 	private fun updateViews(text: String, bytes: ByteArray) {
 		dataView.fillDataView(text, bytes, text != scan.text)
-		stampView.setTrackingLink(bytes, format)
 		characterCountView.text = resources.getQuantityString(
 			R.plurals.character_count,
 			bytes.size,
@@ -405,6 +401,18 @@ class DecodeActivity : AbstractBaseActivity() {
 		bytes: ByteArray
 	): Int {
 		val ctx = this
+
+		val trackingLink = bytes.generateDpTrackingLink(format)
+		if (trackingLink != null) {
+			items.add(
+				Field(
+					getString(R.string.tracking_number),
+					trackingLink.label,
+					trackingLink.link,
+				)
+			)
+			return R.string.parsed_type_deutsche_post
+		}
 
 		try {
 			items.add(Field(R.string.formatted_json, JSONObject(text).toString(2)))
@@ -614,6 +622,9 @@ class DecodeActivity : AbstractBaseActivity() {
 				}
 				setBackgroundResource(R.drawable.list_selector)
 				setOnClickListener {
+					item.link?.let {
+						openUrl(it)
+					}
 					copyToClipboard(text.toString())
 				}
 			}
@@ -866,7 +877,11 @@ class DecodeActivity : AbstractBaseActivity() {
 	}
 }
 
-private data class Field(val key: Any, val value: CharSequence?)
+private data class Field(
+	val key: Any,
+	val value: CharSequence?,
+	val link: String? = null
+)
 
 private inline fun <T : View> T.showIf(
 	visible: Boolean,
@@ -926,30 +941,23 @@ private fun hexDump(bytes: ByteArray, charsPerLine: Int = 33): String {
 
 private fun Int.positiveToString() = if (this > -1) this.toString() else ""
 
-private fun TextView.setTrackingLink(bytes: ByteArray, format: String) {
-	val trackingLink = generateDpTrackingLink(bytes, format)
-	if (trackingLink != null) {
-		visibility = View.VISIBLE
-		text = trackingLink.fromHtml()
-		isClickable = true
-		movementMethod = LinkMovementMethod.getInstance()
-	} else {
-		visibility = View.GONE
-	}
-}
+private data class TrackingLink(
+	val label: String,
+	val link: String
+)
 
-private fun generateDpTrackingLink(bytes: ByteArray, format: String): String? {
+private fun ByteArray.generateDpTrackingLink(format: String): TrackingLink? {
 	// Check for Deutsche Post Matrixcode stamp.
 	var isStamp = false
-	var rawData = bytes
+	var rawData = this
 	if (format == ZxingCpp.BarcodeFormat.DataMatrix.name &&
-		bytes.toString(Charsets.ISO_8859_1).startsWith("DEA5")
+		toString(Charsets.ISO_8859_1).startsWith("DEA5")
 	) {
-		if (bytes.size == 47) {
+		if (size == 47) {
 			isStamp = true
-		} else if (bytes.size > 47) {
+		} else if (size > 47) {
 			// Transform back to original data.
-			rawData = bytes.toString(Charsets.UTF_8).toByteArray(
+			rawData = toString(Charsets.UTF_8).toByteArray(
 				Charsets.ISO_8859_1
 			)
 			if (rawData.size == 47) {
@@ -978,7 +986,10 @@ private fun generateDpTrackingLink(bytes: ByteArray, format: String): String? {
 		"%X",
 		crc4(hexString.toByteArray(Charsets.ISO_8859_1))
 	)
-	return "<a href=\"https://www.deutschepost.de/de/s/sendungsverfolgung.html?piececode=$trackingNumber\">Deutsche Post: $trackingNumber</a>"
+	return TrackingLink(
+		trackingNumber,
+		"https://www.deutschepost.de/de/s/sendungsverfolgung.html?piececode=$trackingNumber",
+	)
 }
 
 // CRC-4 with polynomial x^4 + x + 1.
@@ -1003,15 +1014,6 @@ private fun crc4(input: ByteArray): Int {
 	}
 	crc = crc and 0xF
 	return crc
-}
-
-private fun String.fromHtml() = if (
-	Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-) {
-	Html.fromHtml(this, Html.FROM_HTML_MODE_LEGACY)
-} else {
-	@Suppress("DEPRECATION")
-	Html.fromHtml(this)
 }
 
 private fun ByteArray.md5(): ByteArray = MessageDigest.getInstance(

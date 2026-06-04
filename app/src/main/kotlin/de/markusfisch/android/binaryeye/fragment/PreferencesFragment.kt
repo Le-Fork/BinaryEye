@@ -5,10 +5,15 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import android.database.Cursor
+import android.net.Uri
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.OpenableColumns
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.core.net.toUri
 import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.MultiSelectListPreference
@@ -27,6 +32,7 @@ import de.markusfisch.android.binaryeye.app.hasBluetoothPermission
 import de.markusfisch.android.binaryeye.app.prefs
 import de.markusfisch.android.binaryeye.bluetooth.setBluetoothHosts
 import de.markusfisch.android.binaryeye.media.beepConfirm
+import de.markusfisch.android.binaryeye.preference.Preferences
 import de.markusfisch.android.binaryeye.preference.UrlPreference
 import de.markusfisch.android.binaryeye.view.setPaddingFromWindowInsets
 import de.markusfisch.android.binaryeye.view.systemBarRecyclerViewScrollListener
@@ -34,6 +40,13 @@ import de.markusfisch.android.binaryeye.widget.toast
 
 class PreferencesFragment : PreferenceFragmentCompat() {
 	private var lastProfile: String? = null
+	private val pickBeepTone = registerForActivityResult(
+		ActivityResultContracts.OpenDocument()
+	) { uri ->
+		if (uri != null) {
+			setCustomBeepTone(uri)
+		}
+	}
 
 	private val changeListener = object : OnSharedPreferenceChangeListener {
 		override fun onSharedPreferenceChanged(
@@ -46,16 +59,16 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 				prefs.update()
 			}
 			when (preference.key) {
-				"custom_locale",
-				"dynamic_colors" -> {
+				CUSTOM_LOCALE,
+				DYNAMIC_COLORS -> {
 					activity?.restartApp()
 					return
 				}
 
-				"beep_tone_name",
-				"beep_stream_name" -> beepConfirm()
+				BEEP_TONE_NAME,
+				BEEP_STREAM_NAME -> activity?.beepConfirm()
 
-				"send_scan_bluetooth" -> if (
+				SEND_SCAN_BLUETOOTH -> if (
 					prefs.sendScanBluetooth &&
 					activity?.hasBluetoothPermission() == false
 				) {
@@ -87,6 +100,7 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 		setSummaries(preferenceScreen)
 		setIcons()
 
+		wireBeepTonePicker()
 		wireProfiles()
 		wireAutomatedActions()
 		wireIgnoreCodes()
@@ -103,6 +117,27 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 			onPreferenceClickListener = Preference.OnPreferenceClickListener {
 				startActivity(Intent(activity, ProfilesActivity::class.java))
 				true
+			}
+		}
+	}
+
+	private fun wireBeepTonePicker() {
+		findPreference<ListPreference>(BEEP_TONE_NAME)?.apply {
+			onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+				val toneName = newValue as? String ?: return@OnPreferenceChangeListener false
+				if (toneName == Preferences.CUSTOM_BEEP_TONE_NAME) {
+					pickBeepTone.launch(arrayOf("audio/*"))
+					false
+				} else {
+					if (prefs.usesCustomBeepTone()) {
+						clearCustomBeepTone()
+					}
+					prefs.beepToneName = toneName
+					value = toneName
+					setSummary(this)
+					activity?.beepConfirm()
+					false
+				}
 			}
 		}
 	}
@@ -135,14 +170,14 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 		if (prefs.sendScanBluetooth &&
 			activity?.hasBluetoothPermission() == true
 		) {
-			findPreference<ListPreference>("send_scan_bluetooth_host")?.let {
+			findPreference<ListPreference>(SEND_SCAN_BLUETOOTH_HOST)?.let {
 				setBluetoothHosts(it)
 			}
 		}
 	}
 
 	private fun wireClearNetworkPreferences() {
-		findPreference<Preference>("clear_network_suggestions")?.apply {
+		findPreference<Preference>(CLEAR_NETWORK_SUGGESTIONS)?.apply {
 			if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
 				// From R+ we can query past network suggestions and
 				// make them editable.
@@ -158,7 +193,7 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 				// adding network suggestions on Q as well, so we
 				// need to keep this option.
 				setOnPreferenceClickListener {
-					context?.askToClearNetworkSuggestions()
+					context.askToClearNetworkSuggestions()
 					true
 				}
 			} else {
@@ -225,7 +260,7 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 				setTargetFragment(this@PreferencesFragment, 0)
 				show(fm, null)
 			}
-		} else if (preference.key == "send_scan_bluetooth_host") {
+		} else if (preference.key == SEND_SCAN_BLUETOOTH_HOST) {
 			val ac = activity ?: return
 			if (ac.hasBluetoothPermission()) {
 				setBluetoothHosts(preference as ListPreference)
@@ -247,6 +282,10 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 		when (preference.key) {
 			AUTOMATED_ACTIONS -> return updateAutomatedActionsSummary(preference)
 			IGNORE_CODES -> return updateIgnoreCodesSummary(preference)
+			BEEP_TONE_NAME -> {
+				setBeepToneSummary(preference)
+				return
+			}
 		}
 		when (preference) {
 			is EditTextPreference -> preference.summary = preference.text
@@ -256,6 +295,21 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 				getSortedSummary(preference)
 
 			is PreferenceGroup -> setSummaries(preference)
+		}
+	}
+
+	private fun setBeepToneSummary(preference: Preference) {
+		preference.summary = if (prefs.usesCustomBeepTone()) {
+			getBeepToneLabel(prefs.beepToneUri.toUri())
+		} else {
+			findPreference<ListPreference>(BEEP_TONE_NAME)?.let {
+				val index = it.findIndexOfValue(prefs.beepToneName)
+				if (index >= 0) {
+					it.entries[index]
+				} else {
+					""
+				}
+			} ?: ""
 		}
 	}
 
@@ -290,8 +344,8 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 		setIcon("show_toast_in_bulk_mode", R.drawable.ic_action_toast)
 		setIcon("vibrate", R.drawable.ic_action_vibrate)
 		setIcon("beep", R.drawable.ic_action_beep)
-		setIcon("beep_tone_name", R.drawable.ic_action_notification_sound)
-		setIcon("beep_stream_name", R.drawable.ic_action_notification_sound)
+		setIcon(BEEP_TONE_NAME, R.drawable.ic_action_notification_sound)
+		setIcon(BEEP_STREAM_NAME, R.drawable.ic_action_notification_sound)
 		setIcon("use_history", R.drawable.ic_action_history)
 		setIcon("ignore_duplicates_name", R.drawable.ic_action_remove)
 		setIcon(IGNORE_CODES, R.drawable.ic_action_remove)
@@ -300,8 +354,8 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 		setIcon("send_scan_url", R.drawable.ic_action_link)
 		setIcon("send_scan_type", R.drawable.ic_action_link)
 		setIcon("send_scan_device_id", R.drawable.ic_label)
-		setIcon("send_scan_bluetooth", R.drawable.ic_action_bluetooth)
-		setIcon("send_scan_bluetooth_host", R.drawable.ic_action_bluetooth)
+		setIcon(SEND_SCAN_BLUETOOTH, R.drawable.ic_action_bluetooth)
+		setIcon(SEND_SCAN_BLUETOOTH_HOST, R.drawable.ic_action_bluetooth)
 		setIcon("open_immediately", R.drawable.ic_action_open)
 		setIcon("strip_tracking_params", R.drawable.ic_action_remove)
 		setIcon("show_meta_data", R.drawable.ic_action_info)
@@ -312,10 +366,10 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 		setIcon("default_search_url", R.drawable.ic_action_search)
 		setIcon("open_with_url", R.drawable.ic_action_link)
 		setIcon(AUTOMATED_ACTIONS, R.drawable.ic_action_create)
-		setIcon("clear_network_suggestions", R.drawable.ic_action_wifi)
+		setIcon(CLEAR_NETWORK_SUGGESTIONS, R.drawable.ic_action_wifi)
 		setIcon("brighten_screen", R.drawable.ic_action_bright)
-		setIcon("custom_locale", R.drawable.ic_action_preferences)
-		setIcon("dynamic_colors", R.drawable.ic_action_preferences)
+		setIcon(CUSTOM_LOCALE, R.drawable.ic_action_preferences)
+		setIcon(DYNAMIC_COLORS, R.drawable.ic_action_preferences)
 	}
 
 	private fun setIcon(key: String, iconResId: Int) {
@@ -353,10 +407,84 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 		lastProfile = prefs.profile
 	}
 
+	private fun setCustomBeepTone(uri: Uri) {
+		val context = requireContext()
+		val resolver = context.contentResolver
+		clearCustomBeepTone()
+		try {
+			resolver.takePersistableUriPermission(
+				uri,
+				Intent.FLAG_GRANT_READ_URI_PERMISSION
+			)
+		} catch (e: SecurityException) {
+			val message = e.message
+			if (!message.isNullOrEmpty()) {
+				context.toast(message)
+			}
+			return
+		}
+		prefs.beepToneUri = uri.toString()
+		prefs.beepToneName = Preferences.CUSTOM_BEEP_TONE_NAME
+		findPreference<ListPreference>(BEEP_TONE_NAME)?.apply {
+			value = Preferences.CUSTOM_BEEP_TONE_NAME
+			setSummary(this)
+		}
+		activity?.beepConfirm()
+	}
+
+	private fun clearCustomBeepTone(releaseSelection: Boolean = true) {
+		if (releaseSelection) {
+			releaseBeepTonePermission(prefs.beepToneUri)
+		}
+		prefs.beepToneUri = ""
+	}
+
+	private fun releaseBeepTonePermission(uriString: String) {
+		if (uriString.isEmpty()) {
+			return
+		}
+		try {
+			requireContext().contentResolver.releasePersistableUriPermission(
+				uriString.toUri(),
+				Intent.FLAG_GRANT_READ_URI_PERMISSION
+			)
+		} catch (_: SecurityException) {
+		}
+	}
+
+	private fun getBeepToneLabel(uri: Uri): String {
+		var cursor: Cursor? = null
+		return try {
+			cursor = requireContext().contentResolver.query(
+				uri,
+				arrayOf(OpenableColumns.DISPLAY_NAME),
+				null,
+				null,
+				null
+			)
+			if (cursor?.moveToFirst() == true) {
+				cursor.getString(0)
+			} else {
+				uri.lastPathSegment ?: uri.toString()
+			}
+		} catch (_: Exception) {
+			uri.lastPathSegment ?: uri.toString()
+		} finally {
+			cursor?.close()
+		}
+	}
+
 	companion object {
 		private const val PROFILE = "profile"
 		private const val AUTOMATED_ACTIONS = "automated_actions"
+		private const val BEEP_TONE_NAME = "beep_tone_name"
+		private const val BEEP_STREAM_NAME = "beep_stream_name"
+		private const val CLEAR_NETWORK_SUGGESTIONS = "clear_network_suggestions"
+		private const val CUSTOM_LOCALE = "custom_locale"
+		private const val DYNAMIC_COLORS = "dynamic_colors"
 		private const val IGNORE_CODES = "ignore_codes"
+		private const val SEND_SCAN_BLUETOOTH = "send_scan_bluetooth"
+		private const val SEND_SCAN_BLUETOOTH_HOST = "send_scan_bluetooth_host"
 	}
 }
 
