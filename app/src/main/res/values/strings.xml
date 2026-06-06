@@ -9,10 +9,11 @@
 	<string name="compose_barcode">Compose barcode</string>
 	<string name="decode_barcode">Decode barcode</string>
 	<string name="content">Content</string>
-	<string name="section_parsed_data">Parsed data</string>
+	<string name="section_parsed_data">Encoded Data</string>
 	<string name="section_raw_barcode_content">Barcode content</string>
 	<string name="section_raw_barcode_content_editable">Barcode content (editable)</string>
 	<string name="section_format_details">Format: %1$s</string>
+	<string name="section_meta">Meta data</string>
 	<string name="section_hex_dump">Hex dump</string>
 	<string name="binary_data">(binary data)</string>
 	<plurals name="barcode_info">
@@ -301,6 +302,7 @@
 	<string name="scheme">Scheme</string>
 	<string name="host">Host</string>
 	<string name="query">Query</string>
+	<string name="parsed_type">Content Type</string>
 	<string name="parsed_type_otp">One-Time Password</string>
 	<string name="parsed_type_json">JSON</string>
 	<string name="parsed_type_international_driver_license">International Driver License</string>

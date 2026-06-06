@@ -10,6 +10,7 @@
 	<string name="compose_barcode">Barkod oluştur</string>
 	<string name="decode_barcode">Barkod çöz</string>
 	<string name="content">İçerik</string>
+	<string name="section_meta">Meta veri</string>
 	<string name="binary_data">(ikili veri)</string>
 	<plurals name="barcode_info">
 		<item quantity="one">%2$d karakter, %1$s</item>
@@ -402,7 +403,7 @@
 	<string name="vds_document_type">Belge türü</string>
 	<string name="vds_issuing_country">Düzenleyen ülke</string>
 	<string name="vds_signing_date">İmza tarihi</string>
-	<string name="section_parsed_data">Ayrıştırılmış veriler</string>
+	<string name="section_parsed_data">Kodlanmış veriler</string>
 	<string name="section_raw_barcode_content">Barkod içeriği</string>
 	<string name="section_raw_barcode_content_editable">Barkod içeriği (düzenlenebilir)</string>
 	<string name="section_format_details">Biçim: %1$s</string>
@@ -411,6 +412,7 @@
 		<item quantity="one">%d karakter</item>
 		<item quantity="other">%d karakter</item>
 	</plurals>
+	<string name="parsed_type">İçerik türü</string>
 	<string name="parsed_type_otp">Tek kullanımlık parola</string>
 	<string name="parsed_type_json">JSON</string>
 	<string name="parsed_type_international_driver_license">Uluslararası sürücü belgesi</string>

@@ -10,6 +10,7 @@
 	<string name="compose_barcode">Tạo mã vạch</string>
 	<string name="decode_barcode">Giải mã vạch</string>
 	<string name="content">Nội dung</string>
+	<string name="section_meta">Siêu dữ liệu</string>
 	<string name="binary_data">(thông tin dạng nhị phân)</string>
 	<plurals name="barcode_info">
 		<item quantity="other">%2$d ký tự, %1$s</item>
@@ -400,7 +401,7 @@
 	<string name="vds_document_type">Loại tài liệu</string>
 	<string name="vds_issuing_country">Quốc gia cấp</string>
 	<string name="vds_signing_date">Ngày ký</string>
-	<string name="section_parsed_data">Dữ liệu đã phân tích</string>
+	<string name="section_parsed_data">Dữ liệu đã mã hóa</string>
 	<string name="section_raw_barcode_content">Nội dung mã vạch</string>
 	<string name="section_raw_barcode_content_editable">Nội dung mã vạch (có thể chỉnh sửa)</string>
 	<string name="section_format_details">Định dạng: %1$s</string>
@@ -409,6 +410,7 @@
 		<item quantity="one">%d ký tự</item>
 		<item quantity="other">%d ký tự</item>
 	</plurals>
+	<string name="parsed_type">Loại nội dung</string>
 	<string name="parsed_type_otp">Mật khẩu dùng một lần</string>
 	<string name="parsed_type_json">JSON</string>
 	<string name="parsed_type_international_driver_license">Giấy phép lái xe quốc tế</string>

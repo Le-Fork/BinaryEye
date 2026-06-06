@@ -10,6 +10,7 @@
 	<string name="compose_barcode">Opret stregkode</string>
 	<string name="decode_barcode">Afkod stregkode</string>
 	<string name="content">Indhold</string>
+	<string name="section_meta">Metadata</string>
 	<string name="binary_data">(binære data)</string>
 	<plurals name="barcode_info">
 		<item quantity="one">%2$d karakter, %1$s</item>
@@ -402,7 +403,7 @@
 	<string name="vds_document_type">Dokumenttype</string>
 	<string name="vds_issuing_country">Udstedende land</string>
 	<string name="vds_signing_date">Signeringsdato</string>
-	<string name="section_parsed_data">Fortolkede data</string>
+	<string name="section_parsed_data">Kodede data</string>
 	<string name="section_raw_barcode_content">Stregkodeindhold</string>
 	<string name="section_raw_barcode_content_editable">Stregkodeindhold (redigerbart)</string>
 	<string name="section_format_details">Format: %1$s</string>
@@ -411,6 +412,7 @@
 		<item quantity="one">%d tegn</item>
 		<item quantity="other">%d tegn</item>
 	</plurals>
+	<string name="parsed_type">Indholdstype</string>
 	<string name="parsed_type_otp">Engangskode</string>
 	<string name="parsed_type_json">JSON</string>
 	<string name="parsed_type_international_driver_license">Internationalt kørekort</string>

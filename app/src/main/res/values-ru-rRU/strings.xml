@@ -10,6 +10,7 @@
 	<string name="compose_barcode">Создать штрих-код</string>
 	<string name="decode_barcode">Декодировать штрих-код</string>
 	<string name="content">Текст</string>
+	<string name="section_meta">Метаданные</string>
 	<string name="binary_data">(двоичные данные)</string>
 	<plurals name="barcode_info">
 		<item quantity="one">%2$d символ, %1$s</item>
@@ -408,7 +409,7 @@
 	<string name="vds_document_type">Тип документа</string>
 	<string name="vds_issuing_country">Страна выдачи</string>
 	<string name="vds_signing_date">Дата подписи</string>
-	<string name="section_parsed_data">Проанализированы данные</string>
+	<string name="section_parsed_data">Закодированные данные</string>
 	<string name="section_raw_barcode_content">Содержимое штрихкода</string>
 	<string name="section_raw_barcode_content_editable">Содержимое штрихкода (редактируемый)</string>
 	<string name="section_format_details">Формат: %1$s</string>
@@ -419,6 +420,7 @@
 		<item quantity="many">%d символов</item>
 		<item quantity="other">%d символов</item>
 	</plurals>
+	<string name="parsed_type">Тип содержимого</string>
 	<string name="parsed_type_otp">Одноразовый пароль</string>
 	<string name="parsed_type_json">JSON</string>
 	<string name="parsed_type_international_driver_license">Международное водительское удостоверение</string>

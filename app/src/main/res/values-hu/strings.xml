@@ -10,6 +10,7 @@
 	<string name="compose_barcode">Vonalkód létrehozása</string>
 	<string name="decode_barcode">Vonalkód visszafejtése</string>
 	<string name="content">Tartalom</string>
+	<string name="section_meta">Metaadatok</string>
 	<string name="binary_data">(bináris adat)</string>
 	<plurals name="barcode_info">
 		<item quantity="one">%2$d karakter, %1$s</item>
@@ -402,7 +403,7 @@
 	<string name="vds_document_type">Dokumentumtípus</string>
 	<string name="vds_issuing_country">Kibocsátó ország</string>
 	<string name="vds_signing_date">Aláírás dátuma</string>
-	<string name="section_parsed_data">Értelmezett adatok</string>
+	<string name="section_parsed_data">Kódolt adatok</string>
 	<string name="section_raw_barcode_content">Vonalkódtartalom</string>
 	<string name="section_raw_barcode_content_editable">Vonalkódtartalom (szerkeszthető)</string>
 	<string name="section_format_details">Formátum: %1$s</string>
@@ -411,6 +412,7 @@
 		<item quantity="one">%d karakter</item>
 		<item quantity="other">%d karakter</item>
 	</plurals>
+	<string name="parsed_type">Tartalomtípus</string>
 	<string name="parsed_type_otp">Egyszer használatos jelszó</string>
 	<string name="parsed_type_json">JSON</string>
 	<string name="parsed_type_international_driver_license">Nemzetközi vezetői engedély</string>

@@ -24,21 +24,12 @@ import android.widget.LinearLayout
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
-import androidx.core.net.toUri
 import androidx.core.widget.TextViewCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import de.markusfisch.android.binaryeye.R
 import de.markusfisch.android.binaryeye.actions.ActionRegistry
-import de.markusfisch.android.binaryeye.actions.mail.MatMsg
-import de.markusfisch.android.binaryeye.actions.mail.MatMsgAction
-import de.markusfisch.android.binaryeye.actions.otpauth.OtpauthAction
-import de.markusfisch.android.binaryeye.actions.vtype.VTypeParser
-import de.markusfisch.android.binaryeye.actions.vtype.vcard.VCardAction
-import de.markusfisch.android.binaryeye.actions.vtype.vevent.VEventAction
-import de.markusfisch.android.binaryeye.actions.web.WebAction
 import de.markusfisch.android.binaryeye.actions.wifi.WifiAction
-import de.markusfisch.android.binaryeye.actions.wifi.WifiConnector
 import de.markusfisch.android.binaryeye.adapter.prettifyFormatName
 import de.markusfisch.android.binaryeye.adapter.toFormatDescriptionResId
 import de.markusfisch.android.binaryeye.app.db
@@ -46,13 +37,10 @@ import de.markusfisch.android.binaryeye.app.hasLocationPermission
 import de.markusfisch.android.binaryeye.app.hasWritePermission
 import de.markusfisch.android.binaryeye.app.prefs
 import de.markusfisch.android.binaryeye.content.ContentBarcode
-import de.markusfisch.android.binaryeye.content.EpcQrParser
-import de.markusfisch.android.binaryeye.content.IdlParser
-import de.markusfisch.android.binaryeye.content.SealParser
+import de.markusfisch.android.binaryeye.content.ParsedContentType
 import de.markusfisch.android.binaryeye.content.copyToClipboard
-import de.markusfisch.android.binaryeye.content.epcQrToRes
-import de.markusfisch.android.binaryeye.content.idlToRes
 import de.markusfisch.android.binaryeye.content.openUrl
+import de.markusfisch.android.binaryeye.content.parseData
 import de.markusfisch.android.binaryeye.content.shareAsFile
 import de.markusfisch.android.binaryeye.content.shareText
 import de.markusfisch.android.binaryeye.content.toBarcode
@@ -74,24 +62,24 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONException
-import org.json.JSONObject
 import java.io.File
 import java.security.MessageDigest
 import kotlin.math.roundToInt
+import de.markusfisch.android.binaryeye.content.ParsedField as Field
 
 class DecodeActivity : AbstractBaseActivity() {
+	private lateinit var labelHeadlineView: TextView
 	private lateinit var contentView: EditText
 	private lateinit var contentHeadlineView: TextView
 	private lateinit var characterCountView: TextView
 	private lateinit var dataHeadlineView: TextView
 	private lateinit var formatHeadlineView: TextView
 	private lateinit var dataView: LinearLayout
-	private lateinit var hexHeadlineView: TextView
+	private lateinit var metaHeadlineView: TextView
 	private lateinit var metaView: TableLayout
+	private lateinit var hexHeadlineView: TextView
 	private lateinit var hexView: TextView
 	private lateinit var formatDescriptionView: TextView
-	private lateinit var labelHeadlineView: TextView
 	private lateinit var recreationView: ImageView
 	private lateinit var labelView: EditText
 	private lateinit var fab: FloatingActionButton
@@ -112,7 +100,6 @@ class DecodeActivity : AbstractBaseActivity() {
 	private var isBinary = false
 	private var originalBytes: ByteArray = ByteArray(0)
 	private var lastParsedDataItems: List<Field> = emptyList()
-	private var lastParsedDataTitleResId = 0
 	private var showingDimmed = false
 	private var label: String? = null
 	private var recreationSize = 0
@@ -149,17 +136,18 @@ class DecodeActivity : AbstractBaseActivity() {
 		format = scan.format.name
 		recreationSize = (200f * dp).roundToInt()
 
+		labelHeadlineView = findViewById(R.id.label_headline)
 		contentView = findViewById(R.id.content)
 		contentHeadlineView = findViewById(R.id.content_headline)
 		characterCountView = findViewById(R.id.character_count)
 		dataHeadlineView = findViewById(R.id.data_headline)
 		formatHeadlineView = findViewById(R.id.format_headline)
 		dataView = findViewById(R.id.data)
-		hexHeadlineView = findViewById(R.id.hex_headline)
+		metaHeadlineView = findViewById(R.id.meta_headline)
 		metaView = findViewById(R.id.meta)
+		hexHeadlineView = findViewById(R.id.hex_headline)
 		hexView = findViewById(R.id.hex)
 		formatDescriptionView = findViewById(R.id.format_description)
-		labelHeadlineView = findViewById(R.id.label_headline)
 		recreationView = findViewById(R.id.recreation)
 		labelView = findViewById(R.id.label)
 		fab = findViewById(R.id.open)
@@ -188,6 +176,7 @@ class DecodeActivity : AbstractBaseActivity() {
 		} else {
 			formatHeadlineView.visibility = View.GONE
 			formatDescriptionView.visibility = View.GONE
+			metaHeadlineView.visibility = View.GONE
 			metaView.visibility = View.GONE
 		}
 
@@ -369,161 +358,33 @@ class DecodeActivity : AbstractBaseActivity() {
 		isEditing: Boolean
 	) {
 		val items = mutableListOf<Field>()
+		val parsedData = parseData(this@DecodeActivity, text, bytes, format, action)
+		items.addAll(parsedData.fields)
 		when (prefs.showChecksum) {
-			"CRC4" -> items.add(Field(R.string.crc4, String.format("%X", crc4(bytes))))
-			"MD5" -> items.add(Field(R.string.md5, bytes.md5().toHexString().fold()))
-			"SHA1" -> items.add(Field(R.string.sha1, bytes.sha1().toHexString().fold()))
-			"SHA256" -> items.add(Field(R.string.sha256, bytes.sha256().toHexString().fold()))
+			"CRC4" -> items.addField(R.string.crc4, String.format("%X", crc4(bytes)))
+			"MD5" -> items.addField(R.string.md5, bytes.md5().toHexString().fold())
+			"SHA1" -> items.addField(R.string.sha1, bytes.sha1().toHexString().fold())
+			"SHA256" -> items.addField(R.string.sha256, bytes.sha256().toHexString().fold())
 		}
-		val count = items.count()
-		val parsedDataTitleResId = parseData(items, text, bytes)
-		if (items.count() > count) {
+		if (parsedData.type != ParsedContentType.UNKNOWN) {
+			items.add(
+				0,
+				Field(
+					R.string.parsed_type,
+					getString(parsedData.type.resId)
+				)
+			)
 			lastParsedDataItems = items
-			lastParsedDataTitleResId = parsedDataTitleResId
-				.takeIf { it != 0 } ?: R.string.section_parsed_data
-			fillDataItems(items, false, lastParsedDataTitleResId)
+			fillDataItems(items, false)
 			return
 		}
 		if (isEditing && lastParsedDataItems.isNotEmpty()) {
 			if (!showingDimmed) {
-				fillDataItems(lastParsedDataItems, true, lastParsedDataTitleResId)
+				fillDataItems(lastParsedDataItems, true)
 			}
 			return
 		}
-		val titleResId = if (items.isNotEmpty()) {
-			R.string.section_parsed_data
-		} else {
-			0
-		}
-		fillDataItems(items, false, titleResId)
-	}
-
-	private fun parseData(
-		items: MutableList<Field>,
-		text: String,
-		bytes: ByteArray
-	): Int {
-		val ctx = this
-
-		val trackingLink = bytes.generateDpTrackingLink(format)
-		if (trackingLink != null) {
-			items.add(
-				Field(
-					getString(R.string.tracking_number),
-					trackingLink.label,
-					trackingLink.link,
-				)
-			)
-			return R.string.parsed_type_deutsche_post
-		}
-
-		try {
-			items.add(Field(R.string.formatted_json, JSONObject(text).toString(2)))
-			return R.string.parsed_type_json
-		} catch (_: JSONException) {
-			// Ignore
-		}
-
-		IdlParser.parse(String(bytes))?.let {
-			items.add(Field("IIN", it.iin))
-			it.elements.forEach { (id, value) ->
-				items.add(Field(ctx.idlToRes(id), value))
-			}
-			return R.string.parsed_type_international_driver_license
-		}
-
-		SealParser.parse(ctx, bytes)?.let { sealFields ->
-			sealFields.forEach { vf ->
-				items.add(Field(vf.name, vf.value))
-			}
-			return R.string.parsed_type_digital_seal
-		}
-
-		EpcQrParser.parse(text)?.let {
-			items.addAll(it.map { (id, value) ->
-				Field(ctx.epcQrToRes(id), value)
-			})
-			return R.string.parsed_type_sepa_epc_qr
-		}
-
-		when (action) {
-			is MatMsgAction -> MatMsg(text).run {
-				items.add(Field(R.string.email_to, to))
-				items.add(Field(R.string.email_subject, sub))
-				items.add(Field(R.string.email_body, body))
-				return R.string.parsed_type_email
-			}
-
-			is VCardAction,
-			is VEventAction -> VTypeParser.parseMap(text).let { parsedMap ->
-				parsedMap.forEach { item ->
-					items.add(Field(item.key, item.value.joinToString("\n") { it.value }))
-				}
-				return if (action is VCardAction) {
-					R.string.parsed_type_contact_card
-				} else {
-					R.string.parsed_type_calendar_event
-				}
-			}
-
-			is WebAction -> try {
-				text.toUri().run {
-					items.add(Field(R.string.scheme, scheme))
-					items.add(Field(R.string.host, host))
-					items.add(Field(R.string.query, query))
-				}
-				return R.string.parsed_type_url
-			} catch (_: Exception) {
-				// Ignore
-			}
-
-			is OtpauthAction -> try {
-				text.toUri().run {
-					val label = pathSegments.firstOrNull()?.let {
-						Uri.decode(it)
-					} ?: ""
-					val colonIdx = label.indexOf(':')
-					val issuerFromLabel = if (colonIdx >= 0) {
-						label.substring(0, colonIdx)
-					} else {
-						null
-					}
-					val account = if (colonIdx >= 0) {
-						label.substring(colonIdx + 1).trim()
-					} else {
-						label
-					}
-					val issuer = getQueryParameter("issuer") ?: issuerFromLabel
-					items.add(Field(R.string.entry_type, host?.uppercase()))
-					items.add(Field(R.string.otp_account, account))
-					items.add(Field(R.string.otp_issuer, issuer))
-					items.add(Field(R.string.otp_algorithm, getQueryParameter("algorithm")))
-					items.add(Field(R.string.otp_digits, getQueryParameter("digits")))
-					if (host == "totp") {
-						items.add(Field(R.string.otp_period, getQueryParameter("period")))
-					} else {
-						items.add(Field(R.string.otp_counter, getQueryParameter("counter")))
-					}
-				}
-				return R.string.parsed_type_otp
-			} catch (_: Exception) {
-				// Ignore
-			}
-
-			is WifiAction -> WifiConnector.parseMap(text)?.let { wifiData ->
-				items.add(Field(R.string.entry_type, getString(R.string.wifi_network)))
-				items.add(Field(R.string.wifi_ssid, wifiData["S"]))
-				items.add(Field(R.string.wifi_password, wifiData["P"]))
-				items.add(Field(R.string.wifi_type, wifiData["T"]))
-				items.add(Field(R.string.wifi_hidden, wifiData["H"]))
-				items.add(Field(R.string.wifi_eap, wifiData["E"]))
-				items.add(Field(R.string.wifi_identity, wifiData["I"]))
-				items.add(Field(R.string.wifi_anonymous_identity, wifiData["A"]))
-				items.add(Field(R.string.wifi_phase2, wifiData["PH2"]))
-				return R.string.parsed_type_wifi_network
-			}
-		}
-		return 0
+		fillDataItems(items, false)
 	}
 
 	private fun TableLayout.fillMetaView(scan: Scan) {
@@ -547,14 +408,18 @@ class DecodeActivity : AbstractBaseActivity() {
 			} else {
 				scan.version
 			}
-			items.add(Field(R.string.barcode_version_number, versionString))
+			items.addField(R.string.barcode_version_number, versionString)
 		}
 		if (scan.format == ZxingCpp.BarcodeFormat.QRCode &&
 			scan.dataMask > -1
 		) {
-			items.add(Field(R.string.qr_data_mask, scan.dataMask.toString()))
+			items.addField(R.string.qr_data_mask, scan.dataMask.toString())
 		}
-		fillTable(items)
+		val itemsWithValues = items.filter { !it.value.isNullOrBlank() }
+		if (!itemsWithValues.isEmpty()) {
+			metaHeadlineView.visibility = View.VISIBLE
+			fillTable(itemsWithValues)
+		}
 	}
 
 	private fun TableLayout.fillTable(items: List<Field>) {
@@ -564,26 +429,24 @@ class DecodeActivity : AbstractBaseActivity() {
 			val spaceBetween = (16f * dp).roundToInt()
 			items.forEach { item ->
 				val text = item.value
-				if (!text.isNullOrBlank()) {
-					val tr = TableRow(ctx)
-					val keyView = TextView(ctx).apply {
-						when (val key = item.key) {
-							is Int -> setText(key)
-							is String -> this.text = key
-							else -> this.text = key.toString()
-						}
+				val tr = TableRow(ctx)
+				val keyView = TextView(ctx).apply {
+					when (val key = item.key) {
+						is Int -> setText(key)
+						is String -> this.text = key
+						else -> this.text = key.toString()
 					}
-					val valueView = TextView(ctx).apply {
-						setPadding(spaceBetween, 0, 0, 0)
-						this.text = text
-						setOnClickListener {
-							copyToClipboard(text.toString())
-						}
-					}
-					tr.addView(keyView)
-					tr.addView(valueView)
-					addView(tr)
 				}
+				val valueView = TextView(ctx).apply {
+					setPadding(spaceBetween, 0, 0, 0)
+					this.text = text
+					setOnClickListener {
+						copyToClipboard(text.toString())
+					}
+				}
+				tr.addView(keyView)
+				tr.addView(valueView)
+				addView(tr)
 			}
 			View.VISIBLE
 		}
@@ -591,8 +454,7 @@ class DecodeActivity : AbstractBaseActivity() {
 
 	private fun LinearLayout.fillDataItems(
 		items: List<Field>,
-		dimmed: Boolean,
-		titleResId: Int
+		dimmed: Boolean
 	) {
 		showingDimmed = dimmed
 		removeAllViews()
@@ -601,12 +463,7 @@ class DecodeActivity : AbstractBaseActivity() {
 			visibility = View.GONE
 			return
 		}
-		if (titleResId != 0) {
-			dataHeadlineView.setText(titleResId)
-			dataHeadlineView.visibility = View.VISIBLE
-		} else {
-			dataHeadlineView.visibility = View.GONE
-		}
+		dataHeadlineView.visibility = View.VISIBLE
 		val ctx = context
 		val spaceBetween = (16f * dp).roundToInt()
 		for (item in items) {
@@ -889,11 +746,13 @@ class DecodeActivity : AbstractBaseActivity() {
 	}
 }
 
-private data class Field(
-	val key: Any,
-	val value: CharSequence?,
-	val link: String? = null
-)
+private fun MutableList<Field>.addField(
+	key: Any,
+	value: CharSequence?,
+	link: String? = null
+) {
+	add(Field(key, value, link))
+}
 
 private inline fun <T : View> T.showIf(
 	visible: Boolean,
@@ -952,57 +811,6 @@ private fun hexDump(bytes: ByteArray, charsPerLine: Int = 33): String {
 }
 
 private fun Int.positiveToString() = if (this > -1) this.toString() else ""
-
-private data class TrackingLink(
-	val label: String,
-	val link: String
-)
-
-private fun ByteArray.generateDpTrackingLink(format: String): TrackingLink? {
-	// Check for Deutsche Post Matrixcode stamp.
-	var isStamp = false
-	var rawData = this
-	if (format == ZxingCpp.BarcodeFormat.DataMatrix.name &&
-		toString(Charsets.ISO_8859_1).startsWith("DEA5")
-	) {
-		if (size == 47) {
-			isStamp = true
-		} else if (size > 47) {
-			// Transform back to original data.
-			rawData = toString(Charsets.UTF_8).toByteArray(
-				Charsets.ISO_8859_1
-			)
-			if (rawData.size == 47) {
-				isStamp = true
-			}
-		}
-	}
-
-	if (!isStamp) {
-		return null
-	}
-
-	val hex = StringBuilder()
-	hex.append(String.format("%02X", rawData[9]))
-	hex.append(String.format("%02X", rawData[10]))
-	hex.append(String.format("%02X", rawData[11]))
-	hex.append(String.format("%02X", rawData[12]))
-	hex.append(String.format("%02X", rawData[13]))
-	hex.append(String.format("%X", (rawData[4].toInt() and 0x0f).toByte()))
-	hex.append(String.format("%02X", rawData[5]))
-	hex.append(String.format("%02X", rawData[6]))
-	hex.append(String.format("%02X", rawData[7]))
-	hex.append(String.format("%02X", rawData[8]))
-	val hexString = hex.toString()
-	val trackingNumber = hexString + String.format(
-		"%X",
-		crc4(hexString.toByteArray(Charsets.ISO_8859_1))
-	)
-	return TrackingLink(
-		trackingNumber,
-		"https://www.deutschepost.de/de/s/sendungsverfolgung.html?piececode=$trackingNumber",
-	)
-}
 
 // CRC-4 with polynomial x^4 + x + 1.
 private fun crc4(input: ByteArray): Int {

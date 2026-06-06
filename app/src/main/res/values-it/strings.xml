@@ -9,10 +9,11 @@
 	<string name="compose_barcode">Crea codice a barre</string>
 	<string name="decode_barcode">Decodifica codice a barre</string>
 	<string name="content">Contenuto</string>
-	<string name="section_parsed_data">Dati analizzati</string>
+	<string name="section_parsed_data">Dati codificati</string>
 	<string name="section_raw_barcode_content">Contenuto codice a barre</string>
 	<string name="section_raw_barcode_content_editable">Contenuto codice a barre (modificabile)</string>
 	<string name="section_format_details">Formato: %1$s</string>
+	<string name="section_meta">Metadati</string>
 	<string name="section_hex_dump">Dump esadecimale</string>
 	<string name="binary_data">(dati binari)</string>
 	<plurals name="barcode_info">
@@ -301,6 +302,7 @@
 	<string name="scheme">Schema</string>
 	<string name="host">Host</string>
 	<string name="query">Richiesta</string>
+	<string name="parsed_type">Tipo di contenuto</string>
 	<string name="parsed_type_otp">Password mono uso</string>
 	<string name="parsed_type_json">JSON</string>
 	<string name="parsed_type_international_driver_license">Patente di guida internazionale</string>

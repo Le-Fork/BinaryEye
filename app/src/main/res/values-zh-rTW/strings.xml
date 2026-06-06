@@ -10,6 +10,7 @@
 	<string name="compose_barcode">製作條碼</string>
 	<string name="decode_barcode">解析條碼</string>
 	<string name="content">内容</string>
+	<string name="section_meta">中繼資料</string>
 	<string name="binary_data">(二進位資料)</string>
 	<plurals name="barcode_info">
 		<item quantity="other">%2$d 個字元，%1$s</item>
@@ -400,7 +401,7 @@
 	<string name="vds_document_type">文件類型</string>
 	<string name="vds_issuing_country">簽發國家</string>
 	<string name="vds_signing_date">簽署日期</string>
-	<string name="section_parsed_data">解析後的資料</string>
+	<string name="section_parsed_data">編碼資料</string>
 	<string name="section_raw_barcode_content">條碼內容</string>
 	<string name="section_raw_barcode_content_editable">條碼內容（可編輯）</string>
 	<string name="section_format_details">格式：%1$s</string>
@@ -409,6 +410,7 @@
 		<item quantity="one">%d 個字元</item>
 		<item quantity="other">%d 個字元</item>
 	</plurals>
+	<string name="parsed_type">內容類型</string>
 	<string name="parsed_type_otp">一次性密碼</string>
 	<string name="parsed_type_json">JSON</string>
 	<string name="parsed_type_international_driver_license">國際駕駛執照</string>

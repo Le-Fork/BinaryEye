@@ -10,6 +10,7 @@
 	<string name="compose_barcode">Vytvořit čárový kód</string>
 	<string name="decode_barcode">Dekódovat čárový kód</string>
 	<string name="content">Obsah</string>
+	<string name="section_meta">Metadata</string>
 	<string name="binary_data">(binární data)</string>
 	<plurals name="barcode_info">
 		<item quantity="one">%2$d znak, %1$s</item>
@@ -408,7 +409,7 @@
 	<string name="vds_document_type">Typ dokumentu</string>
 	<string name="vds_issuing_country">Vydávající země</string>
 	<string name="vds_signing_date">Datum podpisu</string>
-	<string name="section_parsed_data">Zpracovaná data</string>
+	<string name="section_parsed_data">Kódovaná data</string>
 	<string name="section_raw_barcode_content">Obsah čárového kódu</string>
 	<string name="section_raw_barcode_content_editable">Obsah čárového kódu (upravitelné)</string>
 	<string name="section_format_details">Formát: %1$s</string>
@@ -419,6 +420,7 @@
 		<item quantity="many">%d znaků</item>
 		<item quantity="other">%d znaků</item>
 	</plurals>
+	<string name="parsed_type">Typ obsahu</string>
 	<string name="parsed_type_otp">Jednorázové heslo</string>
 	<string name="parsed_type_json">JSON</string>
 	<string name="parsed_type_international_driver_license">Mezinárodní řidičský průkaz</string>

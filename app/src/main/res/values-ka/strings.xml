@@ -10,6 +10,7 @@
 	<string name="compose_barcode">შტრიხ-კოდის შექმნა</string>
 	<string name="decode_barcode">შტრიხ-კოდის დეკოდირება</string>
 	<string name="content">ტექსტი</string>
+	<string name="section_meta">მეტამონაცემები</string>
 	<string name="binary_data">(ორობითი მონაცემები)</string>
 	<plurals name="barcode_info">
 		<item quantity="one">%2$d სიმბოლო, %1$s</item>
@@ -402,7 +403,7 @@
 	<string name="vds_document_type">დოკუმენტის ტიპი</string>
 	<string name="vds_issuing_country">გამცემი ქვეყანა</string>
 	<string name="vds_signing_date">ხელმოწერის თარიღი</string>
-	<string name="section_parsed_data">დამუშავებული მონაცემები</string>
+	<string name="section_parsed_data">კოდირებული მონაცემები</string>
 	<string name="section_raw_barcode_content">შტრიხკოდის შიგთავსი</string>
 	<string name="section_raw_barcode_content_editable">შტრიხკოდის შიგთავსი (რედაქტირებადი)</string>
 	<string name="section_format_details">ფორმატი: %1$s</string>
@@ -411,6 +412,7 @@
 		<item quantity="one">%d სიმბოლო</item>
 		<item quantity="other">%d სიმბოლო</item>
 	</plurals>
+	<string name="parsed_type">შიგთავსის ტიპი</string>
 	<string name="parsed_type_otp">ერთჯერადი პაროლი</string>
 	<string name="parsed_type_json">JSON</string>
 	<string name="parsed_type_international_driver_license">საერთაშორისო მართვის მოწმობა</string>

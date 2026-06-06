@@ -10,6 +10,7 @@
 	<string name="compose_barcode">Barcode erstellen</string>
 	<string name="decode_barcode">Barcode dekodieren</string>
 	<string name="content">Inhalt</string>
+	<string name="section_meta">Metadaten</string>
 	<string name="binary_data">(Binäre Daten)</string>
 	<plurals name="barcode_info">
 		<item quantity="one">%2$d Zeichen, %1$s</item>
@@ -402,7 +403,7 @@
 	<string name="vds_document_type">Dokumenttyp</string>
 	<string name="vds_issuing_country">Ausstellendes Land</string>
 	<string name="vds_signing_date">Signaturdatum</string>
-	<string name="section_parsed_data">Analysierte Daten</string>
+	<string name="section_parsed_data">Codierte Daten</string>
 	<string name="section_raw_barcode_content">Barcode-Inhalt</string>
 	<string name="section_raw_barcode_content_editable">Barcode-Inhalt (bearbeitbar)</string>
 	<string name="section_format_details">Format: %1$s</string>
@@ -411,6 +412,7 @@
 		<item quantity="one">%d Zeichen</item>
 		<item quantity="other">%d Zeichen</item>
 	</plurals>
+	<string name="parsed_type">Inhaltstyp</string>
 	<string name="parsed_type_otp">Einmalpasswort</string>
 	<string name="parsed_type_json">JSON</string>
 	<string name="parsed_type_international_driver_license">Internationaler Führerschein</string>
