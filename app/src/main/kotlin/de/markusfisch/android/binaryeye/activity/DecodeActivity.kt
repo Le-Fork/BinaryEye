@@ -269,7 +269,9 @@ class DecodeActivity : AbstractBaseActivity() {
 	}
 
 	private fun resolveActionAndUpdateFab(bytes: ByteArray) {
-		if (!isBinary) {
+		val tooltipText = if (isBinary) {
+			getString(R.string.save_as_file_name)
+		} else {
 			val prevAction = action
 			if (!prevAction.canExecuteOn(bytes)) {
 				action = ActionRegistry.getAction(bytes)
@@ -277,15 +279,16 @@ class DecodeActivity : AbstractBaseActivity() {
 			if (prevAction !== action) {
 				fab.setImageResource(action.iconResId)
 			}
+			getString(action.titleResId)
 		}
 		// Run this for the initial action too.
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
 			fab.setOnLongClickListener { v ->
-				v.context.toast(action.titleResId)
+				v.context.toast(tooltipText)
 				true
 			}
 		} else {
-			fab.tooltipText = getString(action.titleResId)
+			fab.tooltipText = tooltipText
 		}
 	}
 

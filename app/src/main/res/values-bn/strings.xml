@@ -82,6 +82,10 @@
 	<string name="two_seconds">দুই সেকেন্ড</string>
 	<string name="five_seconds">পাঁচ সেকেন্ড</string>
 	<string name="history">ইতিহাস</string>
+	<plurals name="scan_count">
+		<item quantity="one">%dটি স্ক্যান</item>
+		<item quantity="other">%dটি স্ক্যান</item>
+	</plurals>
 	<string name="preferences">পছন্দসমূহ</string>
 	<string name="scan_category">খুঁজো</string>
 	<string name="content_category">তথ্য</string>
@@ -433,4 +437,5 @@
 	<string name="appearance_category">চেহারা</string>
 	<string name="dynamic_colors">ডাইনামিক রং</string>
 	<string name="dynamic_colors_summary">অ্যাপের থিমের জন্য সিস্টেম রং ব্যবহার করুন। Android 12 বা তার পরবর্তী সংস্করণ প্রয়োজন।</string>
+	<string name="automated_action_list_format">%1$s (%2$s)</string>
 </resources>

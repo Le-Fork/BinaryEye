@@ -81,6 +81,10 @@
 	<string name="two_seconds">두 초</string>
 	<string name="five_seconds">다섯 초</string>
 	<string name="history">역사</string>
+	<plurals name="scan_count">
+		<item quantity="one">%d개 스캔</item>
+		<item quantity="other">%d개 스캔</item>
+	</plurals>
 	<string name="preferences">설정</string>
 	<string name="scan_category">스캔</string>
 	<string name="content_category">콘텐츠</string>
@@ -431,4 +435,5 @@
 	<string name="appearance_category">외관</string>
 	<string name="dynamic_colors">동적 색상</string>
 	<string name="dynamic_colors_summary">앱 테마에 시스템 색상을 사용합니다. Android 12 이상이 필요합니다.</string>
+	<string name="automated_action_list_format">%1$s (%2$s)</string>
 </resources>

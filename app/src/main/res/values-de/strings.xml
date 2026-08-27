@@ -82,6 +82,10 @@
 	<string name="two_seconds">Zwei Sekunden</string>
 	<string name="five_seconds">Fünf Sekunden</string>
 	<string name="history">Gespeicherte Codes</string>
+	<plurals name="scan_count">
+		<item quantity="one">%d Scan</item>
+		<item quantity="other">%d Scans</item>
+	</plurals>
 	<string name="preferences">Einstellungen</string>
 	<string name="scan_category">Scannen</string>
 	<string name="content_category">Inhalt</string>
@@ -433,4 +437,5 @@
 	<string name="appearance_category">Erscheinungsbild</string>
 	<string name="dynamic_colors">Dynamische Farben</string>
 	<string name="dynamic_colors_summary">Systemfarben für das App-Design verwenden. Erfordert Android 12 oder höher.</string>
+	<string name="automated_action_list_format">%1$s (%2$s)</string>
 </resources>

@@ -84,6 +84,12 @@
 	<string name="two_seconds">Дві секунди</string>
 	<string name="five_seconds">П\'ять секунд</string>
 	<string name="history">Історія</string>
+	<plurals name="scan_count">
+		<item quantity="one">%d сканування</item>
+		<item quantity="few">%d сканування</item>
+		<item quantity="many">%d сканувань</item>
+		<item quantity="other">%d сканування</item>
+	</plurals>
 	<string name="preferences">Налаштування</string>
 	<string name="scan_category">Сканування</string>
 	<string name="content_category">Вміст</string>
@@ -441,4 +447,5 @@
 	<string name="appearance_category">Зовнішній вигляд</string>
 	<string name="dynamic_colors">Динамічні кольори</string>
 	<string name="dynamic_colors_summary">Використовувати системні кольори для теми додатку. Потрібен Android 12 або новіший.</string>
+	<string name="automated_action_list_format">%1$s (%2$s)</string>
 </resources>

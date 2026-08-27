@@ -90,6 +90,10 @@
 	<string name="two_seconds">Two seconds</string>
 	<string name="five_seconds">Five seconds</string>
 	<string name="history">History</string>
+	<plurals name="scan_count">
+		<item quantity="one">%d scan</item>
+		<item quantity="other">%d scans</item>
+	</plurals>
 	<string name="preferences">Settings</string>
 	<string name="scan_category">Scan</string>
 	<string name="content_category">Content</string>
@@ -432,4 +436,5 @@
 	<string name="appearance_category">Appearance</string>
 	<string name="dynamic_colors">Dynamic colors</string>
 	<string name="dynamic_colors_summary">Use system colors for the app theme. Requires Android 12 or later.</string>
+	<string name="automated_action_list_format">%1$s (%2$s)</string>
 </resources>

@@ -81,6 +81,10 @@
 	<string name="two_seconds">2秒</string>
 	<string name="five_seconds">5秒</string>
 	<string name="history">履歴</string>
+	<plurals name="scan_count">
+		<item quantity="one">%d 件のスキャン</item>
+		<item quantity="other">%d 件のスキャン</item>
+	</plurals>
 	<string name="preferences">設定</string>
 	<string name="scan_category">スキャン</string>
 	<string name="content_category">コンテンツ</string>
@@ -431,4 +435,5 @@
 	<string name="appearance_category">外観</string>
 	<string name="dynamic_colors">ダイナミックカラー</string>
 	<string name="dynamic_colors_summary">アプリのテーマにシステムカラーを使用します。Android 12以降が必要です。</string>
+	<string name="automated_action_list_format">%1$s (%2$s)</string>
 </resources>

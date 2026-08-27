@@ -81,6 +81,10 @@
 	<string name="two_seconds">2 秒</string>
 	<string name="five_seconds">5 秒</string>
 	<string name="history">歷史記錄</string>
+	<plurals name="scan_count">
+		<item quantity="one">%d 次掃描</item>
+		<item quantity="other">%d 次掃描</item>
+	</plurals>
 	<string name="preferences">設定</string>
 	<string name="scan_category">掃描</string>
 	<string name="content_category">內容</string>
@@ -431,4 +435,5 @@
 	<string name="appearance_category">外觀</string>
 	<string name="dynamic_colors">動態顏色</string>
 	<string name="dynamic_colors_summary">使用系統顏色作為應用程式主題。需要 Android 12 或更新版本。</string>
+	<string name="automated_action_list_format">%1$s (%2$s)</string>
 </resources>
